@@ -1,8 +1,8 @@
 Project title: What’s Cooking
 Team name (on GitHub classroom): YBGP
 Team members:
-•	Gowthami Palle
-•	Yaaliny Balachandran	
+*	Gowthami Palle
+*	Yaaliny Balachandran	
 Description of the web application:
 We aspire to build a recipe book web application where users can search for recipes using key ingredients. The application will have the following functionalities:
 •	Users can use the app with or without having an account. However, more features (that are listed below) will be available to the users who have an account.
