@@ -24,15 +24,18 @@ class App extends Component {
 		e.preventDefault();
 		//const ingredients = e.target.elements.ingredients.value;
 		const ingredients = document.getElementById('ingredients').value;
-		const apiCall = fetch('/api/recipes/' + ingredients + '/', {
+		const fetchPromise = fetch('/api/recipes/' + ingredients + '/', {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json"
 			},
+			//credentials: "same-origin"
 		});
-		apiCall.then(response => {
+		fetchPromise.then(response => {
 			return response.json();
-		}).then(data => this.setState({ recipes: data.results }));
+		}).then(data => {
+			this.setState({ recipes: (JSON.parse(data)).results });
+		});
 
 	};
 
@@ -41,13 +44,10 @@ class App extends Component {
 			<div className="App">
 				<h1>Whats Cooking</h1>
 				<SearchForm recipes={this.getRecipes} />
-				<div className="allRecipes">
-					{this.state.recipes.map((recipe) => {
-						return <div key={recipe.id}>{recipe.title}</div>
-					})}
-				</div>
+				{this.state.recipes.map((recipe) => {
+					return <p key={recipe.id}>{recipe.title}</p>
+				})};
 			</div>
-			
 		);
 	};
 	
