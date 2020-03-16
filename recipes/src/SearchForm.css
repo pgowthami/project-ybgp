@@ -1,0 +1,18 @@
+.submit-form{
+    margin-top:50px;
+}
+
+.form-field {
+    margin: 30px;
+    padding: 15px 22px;
+    margin: 10px 5px;
+    box-sizing: border-box;
+    font-size: 25px;
+}
+
+.button-enter{
+    width:80px;
+    height:65px;
+    margin-left: 30px;
+    font-size: 20px;
+}

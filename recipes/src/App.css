@@ -14,14 +14,44 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+    background-color: #282c34;
+    min-height: 15vh;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    color: white;
+}
+
+#title {
+    font-size: 50px;
+    margin:0px;
+    position: absolute; /* new */
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.second-header{
+    display:flex;
+    flex-direction:row;
+    justify-content:center;
+    left:50%;
+}
+#user-name {
+    flex: 0 1 auto;
+    margin-left: auto;
+    font-weight:bold;
+    margin-right: 50px;
+}
+.user-info {
+    flex: 0 1 auto;
+    margin-left: auto;
+    margin-right:20px;
+}
+
+#user-button {
+    width: 200px;
+    height: 50px;
 }
 
 .App-link {
