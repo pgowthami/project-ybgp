@@ -20,6 +20,7 @@ const RecipeBox = props => {
 					title: props.title,
 					loggedIn: props.loggedIn,
 					username: props.username,
+					history: props.history
 				},
 				
 			}}>View Recipe</Link>

@@ -1,4 +1,5 @@
-import React, { Component} from 'react';
+import React, { Component } from 'react';
+import { Link } from "react-router-dom";
 import './App.css';
 
 
@@ -13,8 +14,10 @@ class Recipe extends Component {
 
 	componentDidMount = () => {
 		this.recipeId = this.props.location.state.recipeId;
-		this.state.loggedIn = this.props.location.state.loggedIn;
-		this.state.username = this.props.location.state.username;
+
+		this.setState({loggedIn: this.props.location.state.loggedIn});
+		this.setState({ username: this.props.location.state.username});
+
 		this.getIngredients();
 		this.getInstructions();
 		
@@ -64,6 +67,15 @@ class Recipe extends Component {
 
 	// To-do
 	signOut = () => {
+		//return <Redirect to='/' push={true} />;
+		/*
+		this.props.location.state.loggedIn = false;
+		this.props.location.state.username = '';
+		*/
+		console.log(JSON.parse(this.props.location.state.history));
+		let history = (JSON.parse(this.props.location.state.history));
+		console.log(history);
+		//history.push('/');
 		
 	}
 
@@ -74,8 +86,17 @@ class Recipe extends Component {
 					<h1 id='title'>Whats Cooking</h1>
 					{this.state.loggedIn &&
 						<div className='user-info'>
-							<p id='user-name'>Username: {this.state.username}</p>
-						<button id='user-button' onClick={this.signOut}>Sign out</button>
+						<p id='user-name'>Username: {this.state.username}</p>
+						<button id='user-button' onClick={this.signOut}> 
+							<Link name="link-viewRecipe " to={{
+								pathname: `/`,
+								state: {
+									username: '',
+									loggedIn: false,
+									showLoginPage: true
+								}
+							}}>Signout</Link>
+						</button>
 						</div>
 					}
 				</header>

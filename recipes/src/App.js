@@ -1,13 +1,13 @@
-import React, { useEffect, Component, useState } from 'react';
+import React, {Component} from 'react';
 import './App.css';
 import SearchForm from './SearchForm.js';
 import RecipeBox from './RecipeBox.js';
 import LoginPage from './LoginPage.js';
-
+import { Route } from 'react-router-dom';
+import Recipe from './Recipe.js';
 
 import './RecipeBox.css'
 
-import { useAlert } from 'react-alert'
 
 class App extends Component {
 	constructor() {
@@ -22,6 +22,14 @@ class App extends Component {
 		};
 		this.baseUrl = 'https://spoonacular.com/recipeImages/';
 	};
+
+	componentDidMount = () => {
+		// executed if user logs out
+		if (this.props.location.state) {
+			this.removeUser();
+			//this.setState({ recipes: [], username: this.props.location.state.username, loggedIn: this.props.location.state.loggedIn })
+		}
+	}
 
 	getAllRecipes = (e) => {
 		e.preventDefault();
@@ -60,8 +68,8 @@ class App extends Component {
 		signoutPromise.then(response => {
 			console.log(response);
 			if (response.status === 200) {
-				this.state.loggedIn = false;
-				this.state.username = '';
+				this.setState({ loggedIn: false });
+				this.setState({ username: '' });
 				this.forceUpdate();
 			}
 
@@ -69,20 +77,25 @@ class App extends Component {
 	};
 
 	createAccount = () => {
-		this.state.showLoginPage = 'true';
-		//this.props.match.updateUser = this.updateUser;
+		this.setState({ showLoginPage: true });
 		this.forceUpdate();
 		
 	};
 
 	updateUser = (username) => {
-		this.state.loggedIn = true;
-		this.state.username = username;
-		this.state.showLoginPage = false;
-		console.log(this.state.username);
+		this.setState({ loggedIn: true });
+		this.setState({ username: username });
+		this.setState({ showLoginPage: false });
 	};
 
+	removeUser = () => {
+		this.setState({ loggedIn: false });
+		this.setState({ username: '' });
+		this.setState({ showLoginPage: false });
+	}
+
 	render() {
+		console.log(this.props.history);
 		return (
 			<div className="App">
 				<header className="App-header">
@@ -96,11 +109,13 @@ class App extends Component {
 						</div>
 					}
 				</header>
+				
 				<div className="second-header">
 					{this.state.showLoginPage && <LoginPage updateUser={this.updateUser} history = {this.props.history} />} 
 					{!this.state.showLoginPage && <SearchForm recipes={this.getAllRecipes} />}
 					
 				</div>
+				<Route path="/recipe/:id" render={(props) => <Recipe {...props} removeUser={this.removeUser} />} />
 				{!this.state.showLoginPage && <div className="allRecipesContainer">
 					{this.state.recipes.map((recipe) => {
 						return <RecipeBox key={recipe.id}
@@ -110,7 +125,8 @@ class App extends Component {
 							servings={recipe.servings}
 							image={this.baseUrl + recipe.id + '-480x360.jpg'}
 							loggedIn={this.state.loggedIn}
-							username={this.state.username}/>
+							username={this.state.username}
+							history={JSON.stringify(this.props.history)} />
 					})}
 				</div>
 				}

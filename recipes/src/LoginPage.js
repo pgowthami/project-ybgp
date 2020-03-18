@@ -52,9 +52,9 @@ class LoginPage extends Component {
 			} else {
 				//alert(login failed);
 			}
-			
 		});
 	};
+
 
 	render() {
 		return (
