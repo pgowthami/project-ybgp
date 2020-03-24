@@ -24,133 +24,79 @@ app.use(session({
 }));
 
 app.use(function (req, res, next){
-    req.username = ('username' in req.session)? req.session.username : null;
-    let username = (req.username)? req.username._id : '';
+    req.username = req.session.username;
     console.log("HTTP request", req.method, req.url, req.body);
     next();
 });
 
-var isAuthenticated = function(req, res, next) {
-    if (!req.username) return res.status(401).end("access denied");
-    next();
+let isAuthenticated = function(req, res, next) {
+    if (req.username) return true;
+    else return false;
 };
 
-// curl -H "Content-Type: application/json" -X POST -d '{"username":"alice","password":"alice"}' -c cookie.txt localhost:3000/signup/
 app.post('/signup/', function (req, res, next) {
     var username = req.body.username;
     var password = req.body.password;
-    //users.findOne({_id: username}, function(err, user){
-      //  if (err) return res.status(500).end(err);
-        //if (user) return res.status(409).end("username " + username + " already exists");
-		bcrypt.genSalt(10, function(err, salt) {
-		            bcrypt.hash(password, salt, function(err, hash) {
-						// FIX WE NEED UPSERT AND TO UPDATE INSTEAD I GUESS
-						MongoClient.connect(url, function(err, db) {
-							  if (err) throw err;
-							  var dbo = db.db("mydb");
-							  dbo.collection("users").insertOne({_id: username, hash}, function(err, result) {
-							    if (err) throw err;
-							    console.log(result);
-							    console.log("1 user inserted");
-								console.log(result.insertedId);
-								//return res.json(message);
-							    db.close();
-							  });
-							  
-							 
-					            res.setHeader('Set-Cookie', cookie.serialize('username', username, {
-					                  path : '/', 
-					                  maxAge: 60 * 60 * 24 * 7
-					            }));
-								 req.session.username = username; 
-					            return res.json("user " + username + " signed up");
-		
-  
-						  });
-						
-				       /* users.update({_id: username},{_id: username, hash}, {upsert: true}, function(err){
-				            if (err) return res.status(500).end(err);
-				            // initialize cookie
-				            res.setHeader('Set-Cookie', cookie.serialize('username', username, {
-				                  path : '/', 
-				                  maxAge: 60 * 60 * 24 * 7
-				            }));
-							 req.session.username = username; 
-				            return res.json("user " + username + " signed up");
-				        }); */
-		            });
-		        });
-  //  });
+	bcrypt.genSalt(10, function(err, salt) {
+    	bcrypt.hash(password, salt, function(err, hash) {
+			MongoClient.connect(url, function(err, db) {
+				  if (err) throw err;
+				  var dbo = db.db("mydb");
+				  dbo.collection("users").find({ _id: username}).toArray(function(err, user) {
+				      if (err) throw err;				   
+					  if (user.length > 0) return res.status(409).end("username " + username + " already exists");
+					  dbo.collection("users").insertOne({_id: username, hash}, function(err, result) {
+					  	if (err) return res.status(500).end("internal server error");
+				    	console.log("1 user inserted");
+						console.log(result.username);
+				
+		            	res.setHeader('Set-Cookie', cookie.serialize('username', username, {
+		                  	path : '/', 
+		                  	maxAge: 60 * 60 * 24 * 7
+		            	}));
+					 	req.session.username = username; 
+		            	return res.json("user " + username + " signed up");
+				    	db.close();
+					  	});          
+				  	});
+				});
+		});
+	});
 });
 
-// curl -H "Content-Type: application/json" -X POST -d '{"username":"alice","password":"alice"}' -c cookie.txt localhost:3000/signin/
 app.post('/signin/', function (req, res, next) {
     var username = req.body.username;
     var password = req.body.password;
-	
 	MongoClient.connect(url, function(err, db) {
-		  if (err) throw err;
-		  var dbo = db.db("mydb");
-
-		  dbo.collection("users").find({ _id: username}).toArray(function(err, result) {
-		      if (err) throw err;
-		      console.log(result);
-			  console.log(result[0].hash);
-  		    bcrypt.compare(password, result[0].hash, function(err, valid) {
-  		              if (err) return res.status(500).end(err);
-  		              if (!valid) return res.status(401).end("access denied");
-  		              // start a session
-  	       // if (user.password !== password) return res.status(401).end("access denied"); 
-  	        // initialize cookie
-  		   		req.session.username = username; 
-  		   		//req.session.user = user;
-  	        	res.setHeader('Set-Cookie', cookie.serialize('username', username, {
-  	              	path : '/', 
-  	              	maxAge: 60 * 60 * 24 * 7
-  	        	}));
-		
-  	        	return res.json("user " + username + " signed in");
-  			 });
-			  //return res.json(result);
-		      db.close();
-		    });
-			
-		   
-
-
-	  });
-	
-  
-	/*
-	
-    // retrieve user from the database
-    users.findOne({_id: username}, function(err, user){
-        if (err) return res.status(500).end(err);
-        if (!user) return res.status(401).end("access denied");
-	    bcrypt.compare(password, user.hash, function(err, valid) {
-	              if (err) return res.status(500).end(err);
-	              if (!valid) return res.status(401).end("access denied");
-	              // start a session
-       // if (user.password !== password) return res.status(401).end("access denied"); 
-        // initialize cookie
-	   		req.session.username = username; 
-	   		//req.session.user = user;
-        	res.setHeader('Set-Cookie', cookie.serialize('username', username, {
-              	path : '/', 
-              	maxAge: 60 * 60 * 24 * 7
-        	}));
-		
-        	return res.json("user " + username + " signed in");
-		 });
-    }); */
+		if (err) throw err;
+		var dbo = db.db("mydb");
+		dbo.collection("users").find({ _id: username}).toArray(function(err, result) {
+			if (err) throw err;
+		  	if(!result.length > 0) {
+			  	return res.status(409).end("username does not exist");
+		 	} 
+			bcrypt.compare(password, result[0].hash, function(err, valid) {
+				if (err) return res.status(500).end(err);
+		    	if (!valid) return res.status(401).end("incorrect password. access denied");
+		  		//signed in
+	   			req.session.username = username; 
+	    		res.setHeader('Set-Cookie', cookie.serialize('username', username, {
+	          		path : '/', 
+	          		maxAge: 60 * 60 * 24 * 7
+	    		}));
+	    		return res.json("user " + username + " signed in");
+			});
+			db.close();
+		});
+	});
 });
-
 // curl -b cookie.txt -c cookie.txt localhost:3000/signout/
 app.post('/signout/', function (req, res, next) {
     res.setHeader('Set-Cookie', cookie.serialize('username', '', {
           path : '/', 
           maxAge: 60 * 60 * 24 * 7 // 1 week in number of seconds
     }));
+    req.session.destroy();
     res.redirect('/');
 });
 
@@ -160,7 +106,7 @@ app.get('/api/recipes/:ingredients/', function (req, res, next) {
 	 console.log(req.body);
 	 console.log(req.params.ingredients);
 
- 	Request.get("https://api.spoonacular.com/recipes/search?apiKey="+ apiKey+"&query=" + req.params.ingredients, (error, response, body) => {
+ 	Request.get("https://api.spoonacular.com/recipes/search?apiKey="+apiKey+"&query=" + req.params.ingredients, (error, response, body) => {
 	     if(error) {
 	         return console.dir(error);
 	     }
@@ -169,7 +115,7 @@ app.get('/api/recipes/:ingredients/', function (req, res, next) {
 });
 
 app.get('/api/instructions/:recipeId/', function (req, res, next) {	
- 	Request.get("https://api.spoonacular.com/recipes/" + req.params.recipeId + "/analyzedInstructions?apiKey=" + apiKey, (error, response, body) => {
+ 	Request.get("https://api.spoonacular.com/recipes/" + req.params.recipeId + "/analyzedInstructions?apiKey="+apiKey, (error, response, body) => {
 	     if(error) {
 	         return console.dir(error);
 	     }
@@ -179,7 +125,7 @@ app.get('/api/instructions/:recipeId/', function (req, res, next) {
 });
 
 app.get('/api/ingredients/:id/', function (req, res, next) {
- Request.get("https://api.spoonacular.com/recipes/" + req.params.id + "/information?apiKey=" + apiKey, (error, response, body) => {
+ Request.get("https://api.spoonacular.com/recipes/" + req.params.id + "/information?apiKey="+apiKey, (error, response, body) => {
 	     if(error) {
 	         return console.dir(error);
 	     }
@@ -187,6 +133,100 @@ app.get('/api/ingredients/:id/', function (req, res, next) {
 		 
 	 });
 });
+
+// FAVOURITE RECIPE
+app.post('/api/favourite/:username/:recipeId/', function (req, res, next) {
+    let username = req.params.username;
+    let recipeId = req.params.recipeId;
+    if(isAuthenticated(req, res, next)){
+    	console.log('HERE');
+		MongoClient.connect(url, function(err, db) {
+			if (err) throw err;
+			console.log('EHERE');
+			let dbo = db.db("mydb");
+			dbo.collection("favourites").insertOne({username: username, recipeId: recipeId}, function(err, result) {
+				if (err) return res.status(500).end("internal server error");
+				console.log(result);
+				return res.json('recipe favourited');
+				db.close();
+			});
+		});
+	} 
+});
+
+// remove favourite
+app.post('/api/remove/favourite/:username/:recipeId/', function (req, res, next) {
+    let username = req.params.username;
+    let recipeId = req.params.recipeId;
+    if(isAuthenticated(req, res, next)){
+		MongoClient.connect(url, function(err, db) {
+			if (err) throw err;
+			let dbo = db.db("mydb");
+			dbo.collection("favourites").removeOne({username: username, recipeId: recipeId}, function(err, result) {
+				if (err) return res.status(500).end("internal server error");
+				console.log(result);
+				return res.json('recipe removed from favourites');
+				db.close();
+			});
+		});
+	} else {
+		return res.status(404).end('User not authenticated');
+	}
+});
+
+// get favourite status for a recipe
+/*
+app.get('/api/favourite/:username/:recipeId/', function(req, res, next){
+
+});
+*/
+
+// ADD COMMENTS TO RECIPE
+app.post('/api/comments/', function (req, res, next) {
+    let username = req.body.username;
+    let recipeId = req.body.recipeId;
+    let content = req.body.content;
+
+    if(isAuthenticated(req, res, next)){
+    	console.log('HERE');
+		MongoClient.connect(url, function(err, db) {
+			if (err) throw err;
+			console.log('EHERE');
+			let dbo = db.db("mydb");
+			dbo.collection("comments").insertOne({username: username, recipeId: recipeId, content: content}, function(err, result) {
+				if (err) return res.status(500).end("internal server error");
+				console.log(result);
+				return res.json(JSON.parse(result));
+				db.close();
+			});
+		});
+	} else {
+		return res.status(404).end('User not authenticated');
+	}
+});
+
+//get all comments for a recipe
+
+app.get('/api/comments/:recipeId/', function(req, res, next){
+if(isAuthenticated(req, res, next)){
+	MongoClient.connect(url, function(err, db) {
+			if (err) throw err;
+			let dbo = db.db("mydb");
+			//dbo.collection("comments").find({recipeId: req.params.recipeId},  {sort: {_id: -1}, limit: 10}).toArray(function(err, result){
+			dbo.collection("comments").find({recipeId: parseInt(req.params.recipeId)}).toArray(function(err, result){
+				if (err) return res.status(500).end("internal server error");
+				console.log(result);
+				return res.json(result);
+				db.close();
+			});
+		});
+    
+    } else {
+        return res.json([]);
+    }
+});
+
+
 
 const http = require('http');
 const PORT = 5000;

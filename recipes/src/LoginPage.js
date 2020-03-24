@@ -26,8 +26,10 @@ class LoginPage extends Component {
 			if (response.status === 200) {
 				this.props.updateUser(username);
 				this.props.history.push('/');
+			} else if (response.status === 409) {
+				window.alert('Username is taken. Please choose another one.')
 			} else {
-				//alert
+				window.alert('An error occurred. Please try again.');
 			}
 		});
 	};
@@ -49,8 +51,12 @@ class LoginPage extends Component {
 				console.log(this.props.updateUser);
 				this.props.updateUser(username);
 				this.props.history.push('/');
+			} else if (response.status === 401) {
+				window.alert('Incorrect password. Access denied.');
+			} else if (response.status === 409) {
+				window.alert('Username does not exisit. Please sign up first.')
 			} else {
-				//alert(login failed);
+				window.alert('An error occurred. Please try again.');
 			}
 		});
 	};

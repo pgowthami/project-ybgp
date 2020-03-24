@@ -1,0 +1,89 @@
+
+.Recipe{
+    margin-left: 80px;
+}
+
+.recipe-allparts{
+    display:flex;
+    flex-direction: row;
+}
+
+.recipe-part1{
+
+}
+
+.recipe-part2{
+
+}
+
+.recipe-part3{
+
+}
+
+/* Task 4 */
+.msg_structure {
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 20px;
+    margin-left: 100px;
+    margin-right: 100px;
+    border: 2px solid white;
+    margin-top: 20px;
+    background-color: white;
+}
+
+    /* .msg_structure::after was taken from the following link to force user name to go below their pic
+https://stackoverflow.com/questions/45086899/flexbox-item-wrap-to-a-new-line */
+    .msg_structure::after {
+        content: "";
+        flex: 0 0 100%;
+        height: 0;
+    }
+
+.profile_pic {
+    width: 65px;
+}
+
+.usr_msg {
+    display: flex;
+    flex-grow: 1;
+    padding-left: 20px;
+    font-size: 20px;
+    width: 50px;
+    height: 50px;
+    align-items: center;
+    color: black;
+}
+
+.date {
+    padding: 10px;
+    font-size: 20px;
+    color: black;
+}
+
+.delete {
+    width: 25px;
+    height: 25px;
+    background-image: url('./delete.png');
+    background-repeat: no-repeat;
+    background-size: 100%;
+    margin: 5px;
+    margin-left: auto;
+}
+
+.usr_name {
+    order: 1;
+    padding-left: 20px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    color: black;
+    font-weight: bold;
+}
+
+#messages .msg_structure {
+    border-bottom: 1px solid white;
+}
+
+#messages .image_next {
+    border-bottom: 2px solid white;
+}
