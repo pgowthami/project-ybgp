@@ -8,26 +8,32 @@
 .recipeBoxContainer {
     margin:45px;
     margin-bottom:200px;
-    width:500px;
-    height:400px;
+    width:280px;
+    height:200px;
+
 }
 
 .button-viewRecipe{
-    width:100px;
-    height:50px;
-    font-size: 20px;
+    width:120px;
+    height:40px;
+    font-size: 15px;
 }
 
-.link-viewRecipe{
-    width:100px;
-    height:50px;
+.link-viewRecipe {
+    text-decoration:none;
 }
 
 #recipe-title {
     word-wrap: break-word;
+    width:312px;
+    height:70px;
 }
 
 #recipe-image{
-    width:480px;
-    height:360px;
+    width:312px;
+    height:231px;
+}
+
+.button-viewRecipe{
+
 }

@@ -1,0 +1,39 @@
+﻿.login-form {
+    display: flex;
+    flex-direction: column;
+    width: 400px;
+    height: 300px;
+    margin-top: 50px;
+    padding-top: 50px;
+    border: 2px solid #282c34;
+}
+
+.login-buttons{
+   margin-top:50px;
+
+}
+.btn-login {
+    width: 120px;
+    height: 30px;
+    border-color:#282c34;
+    margin:0px 20px 0px 20px;
+    background-color: white;
+}
+.login-field {
+    margin: 30px;
+    padding: 15px 22px;
+    margin: 10px 5px;
+    box-sizing: border-box;
+    font-size: 15px;
+}
+
+
+.user-info {
+    flex: 0 1 auto;
+    margin-left: auto;
+    margin-right: 20px;
+}
+
+#login-back{
+    margin-top:30px;
+}

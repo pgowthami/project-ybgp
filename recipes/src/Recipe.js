@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
+import Moment from 'moment';
 import './App.css';
 import './Recipe.css';
 
@@ -10,20 +11,25 @@ class Recipe extends Component {
 	state = {
 		instructions: [],
 		ingredients: [],
+		
 		loggedIn:false,
 		username: '',
-		commentsList: []
+		commentsList: [],
+		showUserHomepage:false
 	};
 
 	componentDidMount = () => {
 		this.recipeId = this.props.location.state.recipeId;
-
+		
 		this.setState({loggedIn: this.props.location.state.loggedIn});
 		this.setState({ username: this.props.location.state.username});
 
 		this.getIngredients();
 		this.getInstructions();
 		this.getComments();
+		if (this.props.location.state.loggedIn) {
+			this.getFavourite();
+		}
 		
     };
 
@@ -72,7 +78,7 @@ class Recipe extends Component {
 
 	handleFavourite = () => {
 		// if recipe has been favourited, call remove function
-		if (document.getElementById('btn-favourite').innerHTML === 'Remove from favourites') {
+		if (document.getElementById('btn-favourite').innerHTML === 'Favourited!') {
 			this.removeFavourite();
 		} else {
 
@@ -85,13 +91,17 @@ class Recipe extends Component {
 	favouriteRecipe = () => {
 		const favRecipe = fetch('/api/favourite/' + this.state.username + '/' + this.recipeId + '/', {
 			method: "POST",
+			body: JSON.stringify({
+				title: this.props.location.state.title, readyInMinutes: this.props.location.state.cookingTime,
+				servings: this.props.location.state.servings
+			}),
 			headers: {
 				"Content-Type": "application/json"
 			},
 		});
 		favRecipe.then(response => {
 			if (response.status === 200) {
-				document.getElementById('btn-favourite').innerHTML = 'Remove from favourites';
+				document.getElementById('btn-favourite').innerHTML = 'Favourited!';
 			} else {
 				window.alert('An error occured');
 			}
@@ -107,7 +117,7 @@ class Recipe extends Component {
 		});
 		removeFav.then(response => {
 			if (response.status === 200) {
-				document.getElementById('btn-favourite').innerHTML = 'Add to favourite';
+				document.getElementById('btn-favourite').innerHTML = 'Favourite';
 				console.log(document.getElementById('btn-favourite'));
 			} else {
 				window.alert('An error occured');
@@ -117,31 +127,69 @@ class Recipe extends Component {
 
 	addComment = () => {
 		let comment = document.getElementById('user-comment').value;
-		const addComment = fetch('/api/comments/', {
-			method: "POST",
+		if (comment !== '') {
+			const addComment = fetch('/api/comments/', {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					username: this.state.username,
+					recipeId: this.recipeId,
+					content: comment
+				})
+			});
+			addComment.then(response => {
+				return response.json();
+			}).then(data => {
+				console.log((data.ops)[0]);
+				let newComment = (data.ops)[0];
+				this.setState({ commentsList: [...this.state.commentsList, newComment] });
+				this.getComments();
+				this.forceUpdate();
+			});
+		}
+	}
+
+	deleteComment = (id) => {
+		const deleteComment = fetch('/api/comments/'+id+'/', {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json"
+			}
+		});
+		deleteComment.then(response => {
+			if (response.status === 200) {
+				this.getComments();
+				this.forceUpdate();
+			} else if (response.status === 401) {
+				window.alert('Unauthorized. Cannot delete this comment.');
+			} else if (response.status === 404) {
+				window.alert('This comment does not exist anymore');
+			} else {
+				window.alert('An error occured. Please try again');
+			}
+		});
+	};
+
+	// check if recipe has been favourited and display button appropriately
+	getFavourite = () => {
+		const fetchFavourite = fetch('/api/favourite/' + this.recipeId + '/', {
+			method: "GET",
 			headers: {
 				"Content-Type": "application/json"
 			},
-			body: JSON.stringify({
-				username: this.state.username,
-				recipeId: this.recipeId,
-				content: comment
-			})
 		});
-		addComment.then(response => {
+		fetchFavourite.then(response => {
 			return response.json();
 		}).then(data => {
-			console.log((data.ops)[0]);
-			let newComment = (data.ops)[0];
-			this.setState({ commentsList: [...this.state.commentsList, newComment] });
-			this.getComments();
-			this.forceUpdate();
+			if (data) {
+				document.getElementById('btn-favourite').innerHTML = 'Favourited!';
+			} else {
+				document.getElementById('btn-favourite').innerHTML = 'Favourite';
+			}
+			return;
 		});
-	}
-
-	// TODO: retrieve if recipe has been favourited and display button appropriately
-	displayFavourite = () => {
-		console.log('displayed favourite');
 	}
 
 	getComments = () => {
@@ -162,12 +210,13 @@ class Recipe extends Component {
 		});
 	}
 
+	/*
 	signOut = () => {
 		this.setState({ username: '' });
 		this.setState({ loggedIn: false });
 		this.setState({ showLoginPage: true });
 	}
-
+	*/
 
 
 	render() {
@@ -175,11 +224,10 @@ class Recipe extends Component {
 			<div>
 				<header className="App-header">
 					<h1 id='title'>Whats Cooking</h1>
+					{this.state.loggedIn && <p id='user-name'>Logged in as: {this.state.username}</p>}
 					{this.state.loggedIn &&
-						<div className='user-info'>
-						<p id='user-name'>Username: {this.state.username}</p>
-						<button id='user-button' onClick={this.signOut}> 
-							<Link name="link-viewRecipe " to={{
+						<button id='user-button' className='btn-login'>
+							<Link name="link-viewRecipe " style={{ textDecoration: 'none', color: 'black' }} to={{
 								pathname: `/`,
 								state: {
 									username: '',
@@ -188,71 +236,90 @@ class Recipe extends Component {
 								}
 							}}>Signout</Link>
 						</button>
-						</div>
 					}
 				</header>
 				<div className='Recipe'>
 					<div>
-						<button id='user-button' >
-							<Link name="link-backSearchResults " to={{
-								pathname: `/`,
-								state: {
-									username: this.state.username,
-									loggedIn: this.state.loggedIn,
-									showLoginPage: this.state.showLoginPage
+						<div className='btn-options'>
+							{this.props.location.state.showBackButton && <button id='btn-back' className='btn'>
+								<Link name="link-backSearchResults" style={{ textDecoration: 'none', color: 'black' }} to={{
+									pathname: `/`,
+									state: {
+										username: this.state.username,
+										loggedIn: this.state.loggedIn,
+										showLoginPage: this.state.showLoginPage,
+										showUserHomepage: false,
+										showSearchResults: true
+									}
+								}}>Search Results</Link>
+							</button>
+							}
+							{this.state.loggedIn &&
+								<button id='btn-home' className='btn'>
+									<Link name="link-backSearchResults" style={{ textDecoration: 'none', color: 'black' }} to={{
+										pathname: `/`,
+										state: {
+											username: this.state.username,
+											loggedIn: this.state.loggedIn,
+											showLoginPage: this.state.showLoginPage,
+											showUserHomepage: true
+										}
+									}}>Homepage</Link>
+								</button>
 								}
-							}}>Go Home</Link>
-						</button>
-						<h2>{this.props.location.state.title}</h2>
-						{this.state.loggedIn && <button id='btn-favourite' onClick={this.handleFavourite} > Favourite</button>}
+						</div>
+						<div id='recipe-header'>
+							<div id='recipes-title'>{this.props.location.state.title}</div>
+							{this.state.loggedIn && <button id='btn-favourite' className='btn' onClick={this.handleFavourite} > Favourite</button>}
+						</div>
 					</div>
 					<div className='recipe-allparts'>
 					<div className='recipe-part1'>
 						<img src={this.props.location.state.image} alt={this.props.location.state.title}/>
-						<h3>Cooking time: {this.props.location.state.cookingTime}</h3>
-						<h3>Servings: {this.props.location.state.servings}</h3>
+						<div id='cooking-time'>Cooking time: {this.props.location.state.cookingTime}</div>
+						<div id='servings'>Servings: {this.props.location.state.servings}</div>
 					</div>
 
-					<div className='recipe-part2'>
-						<h3>Ingredients</h3>
-						<ol>
-							{this.state.ingredients.map((ingredient, index) => {
-								return <li key={index}>{ingredient.originalString}</li>
-							})}
-						</ol>
-					</div>
+						<div className='recipe-part2'>
+							<div className='heading'>Ingredients</div>
+							<ol>
+								{this.state.ingredients.map((ingredient, index) => {
+									return <li className='bullet' key={index}>{ingredient.originalString}</li>
+								})}
+							</ol>
+						</div>
 
-					<div className='recipe=part3'>
-					<h3>Instructions</h3>
-					<ol>
-						{this.state.instructions.map((step, index) => {
-							return <li key={index}>{step['step']}</li>
-						})}
+						<div className='recipe=part3'>
+							<div className='heading'>Instructions</div>
+							<ol>
+								{this.state.instructions.map((step, index) => {
+									return <li className='bullet' key={index}>{step['step']}</li>
+								})}
 							</ol>
 						</div>
 					</div>
-				</div>
 
-				<div className='comments'>
-					<div className='comment-form'>
-						<input type="text" className="comment-field" id="user-comment" />
-						<button id='addComment-button' onClick={this.addComment}>Post comment</button>
+
+					<div className='comments'>
+						<div className='heading'>Comments</div>
+							{this.state.loggedIn && <div className='comment-form'>
+							<textarea type="text" className="comment-field" id="user-comment" />
+							<button id='addComment-button' className='btn' onClick={this.addComment}>Post comment</button>
+						</div>}
+
+						<div id='messages'>
+							
+							{this.state.commentsList.map((comment) => {
+								return <div key={comment._id} className='msg_structure'>
+									<div className='usr_msg'>{comment.content}</div>
+									<div className='date'>{Moment(comment.date).format('DD-MMM-YYYY')}</div>
+									<div className='delete' onClick={this.deleteComment.bind(this, comment._id)}></div>
+									<div className='usr_name'>{comment.username}</div>
+								</div>
+							})}
+						</div>
 					</div>
-
-					<div id='messages'>
-						<h3>Comments</h3>
-						{this.state.commentsList.map((comment) => {
-							return <div key={comment._id} className='msg_structure'>
-								<img src={require('./user.png')} alt={comment.username}></img>
-								<div className='usr_msg'>{comment.content}</div>
-								<div className='date'>{comment._id}</div>
-								<div className='delete'></div>
-								<div className='usr_name'>{comment.username}</div>
-							</div>
-						})}
-					</div>
 				</div>
-
 			</div>
 		);
     };

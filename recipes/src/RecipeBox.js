@@ -10,7 +10,7 @@ const RecipeBox = props => {
 		<div id="recipe-cookingTime">Cooking time: {props.cookingTime}</div>
 		<div id="recipe-servings">Servings: {props.servings}</div>
 		<button className="button-viewRecipe">
-			<Link name="link-viewRecipe " to={{
+			<Link name="link-viewRecipe" style={{ textDecoration: 'none', color: 'black'}} to={{
 				pathname: `/recipe/${props.id}`,
 				state: {
 					recipeId: props.id,
@@ -20,7 +20,8 @@ const RecipeBox = props => {
 					title: props.title,
 					loggedIn: props.loggedIn,
 					username: props.username,
-					history: props.history
+					history: props.history,
+					showBackButton: props.showBackButton
 				},
 				
 			}}>View Recipe</Link>

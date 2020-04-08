@@ -1,6 +1,6 @@
 
 .Recipe{
-    margin-left: 80px;
+    margin: 0px 80px 0px 80px;
 }
 
 .recipe-allparts{
@@ -8,32 +8,136 @@
     flex-direction: row;
 }
 
-.recipe-part1{
+#recipe-header {
+    display: flex;
+    flex-direction: row;
+    margin: 30px 0px 30px 0px;
+}
 
+.recipe-part1{
+    display:flex;
+    flex-direction:column;
 }
 
 .recipe-part2{
-
+    margin: 0px 50px 0px 50px; 
+    width: 1000px;
 }
 
 .recipe-part3{
-
+    
 }
 
-/* Task 4 */
+
+.bullet{
+    font-size:18px;
+}
+
+.heading{
+    font-size:22px;
+    font-weight: bold;
+    margin-left:100px;
+    margin-right:100px;
+}
+
+#cooking-time{
+    font-size:20px;
+}
+
+#servings{
+    font-size:20px;
+}
+
+#recipes-title{
+    width:1000px;
+    font-size:22px;
+    font-weight: bold;
+}
+
+.btn {
+    width: 100px;
+    height: 50px;
+    border-color: #282c34;
+    border-radius: 28px;
+    display: inline-block;
+    cursor: pointer;
+    font-family: Arial;
+    font-size: 16px;
+    text-decoration: none;
+    background-color: white;
+    font-weight: bold;
+    color:black;
+  
+}
+
+#btn-favourite{
+    color:red;
+    border-color:red;
+}
+
+
+.button-viewRecipe {
+    width: 150px;
+    height: 30px;
+    border-color: #282c34;
+    border-radius: 28px;
+    display: inline-block;
+    font-family: Arial;
+    font-size: 18px;
+    text-decoration: none;
+    background-color: white;
+    font-weight: bold;
+}
+
+.btn-options{
+    display:flex;
+    flex-direction: row;
+}
+
+#btn-back{
+    margin:30px 20px 0px 0px;
+}
+
+#btn-home {
+    margin: 30px 0px 0px 0px;
+}
+
+
+/*
 .msg_structure {
     display: flex;
     flex-wrap: wrap;
     padding-top: 20px;
-    margin-left: 100px;
-    margin-right: 100px;
     border: 2px solid white;
     margin-top: 20px;
     background-color: white;
+    margin-left: 100px;
+    margin-right: 100px;
 }
 
-    /* .msg_structure::after was taken from the following link to force user name to go below their pic
-https://stackoverflow.com/questions/45086899/flexbox-item-wrap-to-a-new-line */
+     .msg_structure::after was taken from the following link to force user name to go below their pic
+https://stackoverflow.com/questions/45086899/flexbox-item-wrap-to-a-new-line 
+    .msg_structure::after {
+        content: "";
+        flex: 0 0 100%;
+        height: 0;
+    }
+*/
+
+.msg_structure {
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 20px;
+    border: 2px solid black;
+    margin-top: 20px;
+    background-color: white;
+    margin-left: 100px;
+    margin-right: 100px;
+    
+}
+/*
+    .msg_structure::after was taken from the following link to force user name to go below their pic
+    https://stackoverflow.com/questions/45086899/flexbox-item-wrap-to-a-new-line */
     .msg_structure::after {
         content: "";
         flex: 0 0 100%;
@@ -86,4 +190,15 @@ https://stackoverflow.com/questions/45086899/flexbox-item-wrap-to-a-new-line */
 
 #messages .image_next {
     border-bottom: 2px solid white;
+}
+
+.comment-field{
+    height: 100px;
+    width: 1000px;
+    margin-left:100px;
+}
+
+.comment-form{
+    display: flex;
+    flex-direction: row;
 }
