@@ -58,8 +58,7 @@ class Recipe extends Component {
 				this.setState({ ingredients: [{ step: "Sorry, no data found" }] });
 				return;
 			}
-			//this.setState({ ingredients: data });
-			this.state.ingredients = data;
+			this.setState({ ingredients: data });
 		});
 
 	};
