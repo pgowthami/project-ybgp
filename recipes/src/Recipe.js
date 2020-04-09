@@ -171,7 +171,9 @@ class Recipe extends Component {
 				}
 				let newComment = (data.ops)[0];
 				//this.setState({ commentsList: [...this.state.commentsList, newComment] });
-				this.state.commentsList.push(newComment);
+				console.log(this.state.commentsList);
+				this.state.commentsList.unshift(newComment);
+				//this.state.commentsList.splice(0, 0, newComment);
 				console.log(this.state.commentsList);
 				this.getComments();
 				this.forceUpdate();
