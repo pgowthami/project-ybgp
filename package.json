@@ -21,6 +21,7 @@
   "dependencies": {
     "bcrypt": "^4.0.1",
     "express": "^4.17.1",
+    "express-session": "^1.17.0",
     "helmet": "^3.22.0",
     "mongodb": "^3.5.5",
     "request": "^2.88.2",
