@@ -10,7 +10,7 @@ const validator = require('validator');
 
 var mongo = require('mongodb');
 const MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/";
+var url = "mongodb://heroku_xd79spf1:o89g3e51q29s02t22ce6qbhks7@ds113670.mlab.com:13670/heroku_xd79spf1";
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
