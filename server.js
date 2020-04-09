@@ -163,7 +163,9 @@ app.post('/signout/', function (req, res, next) {
 });
 
 
-let apiKey = '5ce1b834f17140fd8f0f99b330a5318d';
+//let apiKey = 'b5f04b0b394e4a6eb1d3d0157c4abaa1';
+//let apiKey = '3bd6b3501a044f70b65971f869776dfb';
+let apiKey = 'ee29c579c7af4db59e00ba30158a11a9';
 app.post('/api/recipes/', checkIngredients, function (req, res, next) {
 	 console.log(req.body);
 	 console.log(req.body.ingredients);
