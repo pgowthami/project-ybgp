@@ -1,0 +1,20 @@
+﻿.homepage-display{
+    display: flex;
+    flex-direction:row;
+}
+
+#user-favourites {
+    display:flex;
+    flex-direction:column;
+    margin-left:200px;
+}
+
+#user-suggestions{
+    display:flex;
+    flex-direction:column;
+    margin-left: 200px;
+}
+
+.homepage-headings{
+    font-size:30px;
+}

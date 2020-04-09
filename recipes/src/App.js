@@ -5,8 +5,8 @@ import SearchForm from './SearchForm.js';
 import RecipeBox from './RecipeBox.js';
 import LoginPage from './LoginPage.js';
 import UserAccount from './UserAccount.js';
-
 import './RecipeBox.css'
+import HomePage from './HomePage';
 
 
 class App extends Component {
@@ -99,22 +99,31 @@ class App extends Component {
 			//toast("Please enter an ingredient", { autoClose: false });
 			return;
 		}
-		const fetchPromise = fetch('/api/recipes/' + ingredients + '/', {
-			method: "GET",
+		const fetchPromise = fetch('/api/recipes/', {
+			method: "POST",
+			body: JSON.stringify({ ingredients: ingredients }),
 			headers: {
 				"Content-Type": "application/json"
 			},
 			//credentials: "same-origin"
 		});
 		fetchPromise.then(response => {
+			if (response.status === 400) {
+				window.alert("Bad input");
+				return null;
+			}
 			return response.json();
 		}).then(data => {
+			if (data === null) {
+				return;
+			}
 			if (data === '[]' || data === 'undefined' || JSON.parse(data).results.length === 0) {
 				this.setState({ recipes: [] });
 				this.setState({ recipesFound: false });
 				window.alert('No results found. Please use another ingredient');
 			}
 			this.setState({ recipes: (JSON.parse(data)).results });
+			
 		});
 	};
 
@@ -183,12 +192,31 @@ class App extends Component {
 		userFavourites.then(response => {
 			return response.json();
 		}).then(data => {
-			console.log(data);
+			console.log(data.length);
+			console.log(document.getElementById('favourite-message'));
+			if (data.length === 0) {
+				document.getElementById('favourite-message').innerHTML = 'You did not favourite any recipes.';
+				this.forceUpdate();
+				return;
+			}
+			document.getElementById('favourite-message').innerHTML = '';
 			this.setState({ userFavourites: data });
 		});
 	}
 
 	getUserSuggestions = () => {
+		const userSuggestions = fetch('/api/toprecipes/', {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json"
+			},
+		});
+		userSuggestions.then(response => {
+			return response.json();
+		}).then(data => {
+			console.log(data);
+			this.setState({ userSuggestions: data });
+		});
 
 	}
 
@@ -213,23 +241,25 @@ class App extends Component {
 			<div className="App">
 				<header className="App-header">
 					<h1 id='title'>Whats Cooking</h1>
-					{!this.state.loggedIn && !this.state.showLoginPage && <button id='account-button'onClick={this.createAccount}>
+					{!this.state.loggedIn && !this.state.showLoginPage && <button className='account-button' id='signin-button' onClick={this.createAccount}>
 						Sign in/Sign up</button>}
 					{this.state.loggedIn && <p id='user-name'>Logged in as: {this.state.username}</p>}
-					{this.state.loggedIn && <button id='account-button' onClick={this.signOut}>Sign out</button>}
+					{this.state.loggedIn && this.state.showUserHomepage && !this.state.changePassword &&
+						<button id='changepassword-button' className='account-button' onClick={this.updatePassword}>Change Password</button>
+					}
+					{this.state.loggedIn && <button id='signout-button' className='account-button' onClick={this.signOut}>Sign out</button>}
 				</header>
-				{this.state.loggedIn && this.state.showUserHomepage && !this.state.changePassword &&
-					<button id='btn-changePassword' className='btn' onClick={this.updatePassword}>Change Password</button>
-				}
+				
 
 				{this.state.changePassword && <UserAccount username={this.state.username} updateUser={this.updateUser} history={this.props.history} />}
 
 				{this.state.loggedIn && !this.state.showUserHomepage && !this.state.changePassword &&
 					<button id='btn-home' className='btn' onClick={this.displayHomepage}>Homepage</button>
 				}
+				
 				<div className="second-header">
 					{this.state.showLoginPage && <LoginPage updateUser={this.updateUser} history={this.props.history} />}
-					{!this.state.showLoginPage && !this.state.changePassword && < SearchForm recipes={this.getAllRecipes} />}
+					{!this.state.showLoginPage && !this.state.changePassword && <SearchForm recipes={this.getAllRecipes} />}
 				</div>
 
 				{!this.state.showUserHomepage && !this.state.showLoginPage && <div className="allRecipesContainer">
@@ -249,30 +279,11 @@ class App extends Component {
 				}
 
 				{this.state.showUserHomepage && !this.state.changePassword &&
-					<div className='homepage-display'>
-					<div id='user-favourites'>
-						<div className='homepage-headings'>Your Recent Favourites!</div>
-						{this.state.userFavourites.map((recipe) => {
-							return <RecipeBox key={recipe.recipeId}
-								id={recipe.recipeId}
-								title={recipe.title}
-								cookingTime={recipe.readyInMinutes}
-								servings={recipe.servings}
-								image={this.baseUrl + recipe.recipeId + '-312x231.jpg'}
-								loggedIn={this.state.loggedIn}
-								username={this.state.username}
-								history={JSON.stringify(this.props.history)}
-								showBackButton={false} />
-						})}
-						</div>
-					<div id='user-suggestions'>
-						<div className='homepage-headings'>Try these!</div>
-					</div>
-
-					</div>
-				}
-
-
+					<HomePage userFavourites={this.state.userFavourites} baseUrl={this.baseUrl}
+						loggedIn={this.state.loggedIn} username={this.state.username} history={this.props.history}
+						userSuggestions={this.state.userSuggestions}
+					/>}
+				
 			</div>
 		);
 	};

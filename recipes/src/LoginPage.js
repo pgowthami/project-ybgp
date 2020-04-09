@@ -14,6 +14,7 @@ class LoginPage extends Component {
 		if (username !== '' && password !== '') {
 			if (username.length > 10) {
 				window.alert('Username must be less than 10 characters');
+				return;
 			}
 			const signUp = fetch('/signup/', {
 				method: "POST",
@@ -27,6 +28,8 @@ class LoginPage extends Component {
 				if (response.status === 200) {
 					this.props.updateUser(username);
 					this.props.history.push('/');
+				} else if (response.status === 400) {
+					window.alert('Bad input. Please choose another username.');
 				} else if (response.status === 409) {
 					window.alert('Username is taken. Please choose another one.')
 				} else {
@@ -50,10 +53,10 @@ class LoginPage extends Component {
 			});
 			signIn.then(response => {
 				if (response.status === 200) {
-					console.log(this.props);
-					console.log(this.props.updateUser);
 					this.props.updateUser(username);
 					this.props.history.push('/');
+				} else if (response.status === 400) {
+					window.alert('Bad input. Please choose another username.');
 				} else if (response.status === 401) {
 					window.alert('Incorrect password. Access denied.');
 				} else if (response.status === 409) {

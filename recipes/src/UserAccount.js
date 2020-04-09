@@ -9,12 +9,30 @@ class UserAccount extends Component {
 	};
 
 	changePassword = () => {
+		let password1 = document.getElementById('password1').value;
+		let password2 = document.getElementById('password2').value;
+		if (password1 !== '' && password2 !== '') {
+			const changePswd = fetch('/changePassword/', {
+				method: "POST",
+				body: JSON.stringify({ password1: password1, password2: password2 }),
+				headers: {
+					"Content-Type": "application/json"
+				},
+			});
+			changePswd.then(response => {
+				if (response.status === 200) {
+					this.props.updateUser(this.props.username);
+					this.props.history.push('/');
+				} else if (response.status === 404) {
+					window.alert('Passwords do not match. Please try again.');
+				} else if (response.status === 409) {
+					window.alert('Username does not exist. Something went wrong please try again.');
+				} else {
+					window.alert('An error occurred. Please try again.');
+				}
+			});
 
-	}
-
-
-
-	signin = () => {
+		}
 
 	};
 

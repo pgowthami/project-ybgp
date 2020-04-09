@@ -6,6 +6,8 @@ const bcrypt = require('bcrypt');
 const fs = require('fs');
 const helmet = require('helmet');
 
+const validator = require('validator');
+
 var mongo = require('mongodb');
 const MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/";
@@ -31,12 +33,37 @@ app.use(function (req, res, next){
     next();
 });
 
-let isAuthenticated = function(req, res, next) {
-    if (req.username) return true;
-    else return false;
+
+var isAuthenticated = function(req, res, next) {
+    if (!req.username) return res.status(401).end("access denied");
+    next();
 };
 
-app.post('/signup/', function (req, res, next) {
+// 3 methods to check input before processing it
+var checkUsername = function(req, res, next) {
+    if (!validator.isAlphanumeric(req.body.username)) return res.status(400).end("bad input");
+    next();
+};
+
+var sanitizeContent = function(req, res, next) {
+    req.body.content = validator.escape(req.body.content);
+    next();
+}
+
+var checkId = function(req, res, next) {
+    if (!validator.isAlphanumeric(req.params.id)) return res.status(400).end("bad input");
+    next();
+};
+
+var checkIngredients = function(req, res, next) {
+    if (!validator.isAlphanumeric(req.body.ingredients)) return res.status(400).end("bad input");
+    next();
+};
+
+
+app.post('/signup/', checkUsername, function (req, res, next) {
+	if (!('username' in req.body)) return res.status(400).end('username is missing');
+    if (!('password' in req.body)) return res.status(400).end('password is missing');
     var username = req.body.username;
     var password = req.body.password;
 	bcrypt.genSalt(10, function(err, salt) {
@@ -66,12 +93,14 @@ app.post('/signup/', function (req, res, next) {
 	});
 });
 
-app.post('/signin/', function (req, res, next) {
-    var username = req.body.username;
-    var password = req.body.password;
+app.post('/signin/', checkUsername, function (req, res, next) {
+	if (!('username' in req.body)) return res.status(400).end('username is missing');
+    if (!('password' in req.body)) return res.status(400).end('password is missing');
+    let username = req.body.username;
+    let password = req.body.password;
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
-		var dbo = db.db("mydb");
+		let dbo = db.db("mydb");
 		dbo.collection("users").find({ _id: username}).toArray(function(err, result) {
 			if (err) throw err;
 		  	if(!result.length > 0) {
@@ -92,6 +121,37 @@ app.post('/signin/', function (req, res, next) {
 		});
 	});
 });
+
+// Change password
+app.post('/changePassword/', isAuthenticated, function (req, res, next) {
+	if (!('password1' in req.body)) return res.status(400).end('password entry #1 is missing');
+    if (!('password2' in req.body)) return res.status(400).end('password entry #2 is missing');
+    let username = req.username;
+    let password1 = req.body.password1;
+    let password2 = req.body.password2;
+	// Check if passwords match
+	if(password1 !== password2){
+		return res.status(404).end('Passwords do not match. Please try again.');
+	}
+	bcrypt.genSalt(10, function(err, salt) {
+	bcrypt.hash(password1, salt, function(err, hash) {
+		MongoClient.connect(url, function(err, db) {
+			  if (err) throw err;
+			  var dbo = db.db("mydb");
+			  dbo.collection("users").find({ _id: username}).toArray(function(err, user) {
+			      if (err) throw err;				   
+				  if (!user) return res.status(409).end("username does not exist");
+				  dbo.collection("users").replaceOne({_id: username}, {_id: username, hash}, function(err, result) {
+				  	if (err) return res.status(500).end("internal server error");
+	            	return res.json('Password has been changed');
+			    	db.close();
+				  	});          
+			  	});
+			});
+		});
+	});
+});
+
 // curl -b cookie.txt -c cookie.txt localhost:3000/signout/
 app.post('/signout/', function (req, res, next) {
     res.setHeader('Set-Cookie', cookie.serialize('username', '', {
@@ -103,12 +163,12 @@ app.post('/signout/', function (req, res, next) {
 });
 
 
-let apiKey = 'ee29c579c7af4db59e00ba30158a11a9';
-app.get('/api/recipes/:ingredients/', function (req, res, next) {
+let apiKey = '5ce1b834f17140fd8f0f99b330a5318d';
+app.post('/api/recipes/', checkIngredients, function (req, res, next) {
 	 console.log(req.body);
-	 console.log(req.params.ingredients);
+	 console.log(req.body.ingredients);
 
- 	Request.get("https://api.spoonacular.com/recipes/search?apiKey="+apiKey+"&query=" + req.params.ingredients, (error, response, body) => {
+ 	Request.get("https://api.spoonacular.com/recipes/search?apiKey="+apiKey+"&query=" + req.body.ingredients, (error, response, body) => {
 	     if(error) {
 	         return console.dir(error);
 	     }
@@ -116,8 +176,8 @@ app.get('/api/recipes/:ingredients/', function (req, res, next) {
 	 });
 });
 
-app.get('/api/instructions/:recipeId/', function (req, res, next) {	
- 	Request.get("https://api.spoonacular.com/recipes/" + req.params.recipeId + "/analyzedInstructions?apiKey="+apiKey, (error, response, body) => {
+app.get('/api/instructions/:id/', checkId, function (req, res, next) {	
+ 	Request.get("https://api.spoonacular.com/recipes/" + req.params.id + "/analyzedInstructions?apiKey="+apiKey, (error, response, body) => {
 	     if(error) {
 	         return console.dir(error);
 	     }
@@ -126,7 +186,7 @@ app.get('/api/instructions/:recipeId/', function (req, res, next) {
 	 });
 });
 
-app.get('/api/ingredients/:id/', function (req, res, next) {
+app.get('/api/ingredients/:id/', checkId, function (req, res, next) {
  Request.get("https://api.spoonacular.com/recipes/" + req.params.id + "/information?apiKey="+apiKey, (error, response, body) => {
 	     if(error) {
 	         return console.dir(error);
@@ -137,53 +197,156 @@ app.get('/api/ingredients/:id/', function (req, res, next) {
 });
 
 // FAVOURITE RECIPE
-app.post('/api/favourite/:username/:recipeId/', function (req, res, next) {
+app.post('/api/favourite/:username/:id/', isAuthenticated, checkId, function (req, res, next) {
     let username = req.params.username;
-    let recipeId = req.params.recipeId;
+    let recipeId = req.params.id;
     let readyInMinutes = req.body.readyInMinutes;
     let servings = req.body.servings;
     let title = req.body.title;
-    if(isAuthenticated(req, res, next)){
-    	console.log('HERE');
-		MongoClient.connect(url, function(err, db) {
-			if (err) throw err;
-			console.log('EHERE');
-			let dbo = db.db("mydb");
-			dbo.collection("favourites").insertOne({username: req.username, recipeId: recipeId, title:title, readyInMinutes: readyInMinutes, servings: servings}, function(err, result) {
-				if (err) return res.status(500).end("internal server error");
-				console.log(result);
-				return res.json('recipe favourited');
-				db.close();
-			});
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		let dbo = db.db("mydb");
+		dbo.collection("favourites").insertOne({username: req.username, recipeId: recipeId, title:title, readyInMinutes: readyInMinutes, servings: servings}, function(err, result) {
+			if (err) return res.status(500).end("internal server error");
+			console.log(result);
+			return res.json('recipe favourited');
+			db.close();
 		});
-	} 
+	});
 });
 
 // remove favourite
-app.post('/api/remove/favourite/:username/:recipeId/', function (req, res, next) {
+app.post('/api/remove/favourite/:username/:id/', isAuthenticated, checkId, function (req, res, next) {
     let username = req.params.username;
-    let recipeId = req.params.recipeId;
-    if(isAuthenticated(req, res, next)){
-		MongoClient.connect(url, function(err, db) {
-			if (err) throw err;
-			let dbo = db.db("mydb");
-			dbo.collection("favourites").removeOne({username: req.username, recipeId: recipeId}, function(err, result) {
-				if (err) return res.status(500).end("internal server error");
-				console.log(result);
-				return res.json('recipe removed from favourites');
-				db.close();
-			});
+    let recipeId = req.params.id;
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		let dbo = db.db("mydb");
+		dbo.collection("favourites").removeOne({username: req.username, recipeId: recipeId}, function(err, result) {
+			if (err) return res.status(500).end("internal server error");
+			console.log(result);
+			return res.json('recipe removed from favourites');
+			db.close();
 		});
-	} else {
-		return res.status(404).end('User not authenticated');
-	}
+	});
 });
 
 // get favourite status for a recipe
-app.get('/api/favourite/:recipeId/', function(req, res, next){
+app.get('/api/favourite/:id/', isAuthenticated, checkId, function(req, res, next){
+	let username = req.username;
+	let recipeId = req.params.id;
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		let dbo = db.db("mydb");
+		dbo.collection("favourites").findOne({username: username, recipeId: recipeId}, function(err, result) {
+			if (err) return res.status(500).end("internal server error");
+			console.log(result);
+			return res.json(result);
+			db.close();
+		});
+	});
+});
+
+
+// get the latest 5 favourites of user
+app.get('/api/favourites/', isAuthenticated, function(req, res, next){
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		let dbo = db.db("mydb");
+		dbo.collection("favourites").find({username: req.username},  {sort: {_id: -1}, limit: 5}).toArray(function(err, result){
+		//dbo.collection("comments").find({recipeId: parseInt(req.params.recipeId)}).toArray(function(err, result){
+			if (err) return res.status(500).end("internal server error");
+			console.log(result);
+			return res.json(result);
+			db.close();
+		});
+	});
+});
+
+
+// ADD COMMENTS TO RECIPE
+app.post('/api/comments/', isAuthenticated, sanitizeContent, function (req, res, next) {
+    let username = req.body.username;
+    let recipeId = req.body.recipeId;
+    let content = req.body.content;
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		let dbo = db.db("mydb");
+		dbo.collection("comments").insertOne({username: req.username, recipeId: recipeId, content: content, date: new Date()}, function(err, result) {
+			if (err) return res.status(500).end("internal server error");
+			console.log(result);
+			return res.json(JSON.parse(result));
+			db.close();
+		});
+	});
+});
+
+// Delete comment
+
+app.delete('/api/comments/:id/', isAuthenticated, checkId, function (req, res, next) {
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		let dbo = db.db("mydb");
+		dbo.collection("comments").findOne({_id: new mongo.ObjectId(req.params.id)}, function(err, result) {
+			if (err) return res.status(500).end("internal server error");
+			if(!result) return res.status(404).end('comment not found');
+			// check if comment is owned by the user
+			if(req.username !== '' && result.username === req.username){
+				dbo.collection("comments").removeOne({_id: new mongo.ObjectId(req.params.id)}, function(err, result) {
+					if (err) return res.status(500).end("internal server error");
+					return res.json('Comment removed from database');
+					db.close();
+				});
+			} else {
+				db.close();
+				return res.status(401).end('User not authenticated to delete this message');
+			}
+		});
+	});
+});
+
+//get all comments for a recipe
+
+app.get('/api/comments/:id/', checkId, function(req, res, next){
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		let dbo = db.db("mydb");
+		dbo.collection("comments").find({recipeId: req.params.id},  {sort: {_id: -1}, limit: 10}).toArray(function(err, result){
+		//dbo.collection("comments").find({recipeId: req.params.recipeId}).toArray(function(err, result){
+			if (err) return res.status(500).end("internal server error");
+			console.log(result);
+			return res.json(result);
+			db.close();
+		});
+	});
+});
+
+
+// RATINGS
+
+// get the latest 5 favourites of user
+app.get('/api/toprecipes/', isAuthenticated, function(req, res, next){
+	console.log("HITTTED");
+
+		MongoClient.connect(url, function(err, db) {
+				if (err) throw err;
+				let dbo = db.db("mydb");
+				dbo.collection("avgrating").find({},  {sort: {avgRate: -1}, limit: 5}).toArray(function(err, result){
+				//dbo.collection("comments").find({recipeId: parseInt(req.params.recipeId)}).toArray(function(err, result){
+					if (err) return res.status(500).end("internal server error");
+					console.log(result);
+					return res.json(result);
+					db.close();
+				});
+			});
+
+});
+
+// get favourite status for a recipe
+app.get('/api/toprating/:recipeId/', isAuthenticated, function(req, res, next){
 	let username = req.username;
 	let recipeId = req.params.recipeId;
-	if(isAuthenticated(req, res, next)){
+
 		MongoClient.connect(url, function(err, db) {
 			if (err) throw err;
 			let dbo = db.db("mydb");
@@ -194,102 +357,114 @@ app.get('/api/favourite/:recipeId/', function(req, res, next){
 				db.close();
 			});
 		});
-	} else {
-		return res.status(404).end('User not authenticated');
-	}
+	
 });
 
+app.post('/api/rating/:username/:recipeId/:rating/', isAuthenticated, function (req, res, next) {
+    let username = req.params.username;
+    let recipeId = req.params.recipeId;
+	 let rating = req.params.rating;
+	 let readyInMinutes = req.body.readyInMinutes;
+	 let servings = req.body.servings;
+	 let title = req.body.title;
+	 console.log("POST RATE");
+	 console.log(req.body);
 
-// get the latest 5 favourites of user
-app.get('/api/favourites/', function(req, res, next){
-	if(isAuthenticated(req, res, next)){
+    	console.log('HERE');
 		MongoClient.connect(url, function(err, db) {
-				if (err) throw err;
-				let dbo = db.db("mydb");
-				dbo.collection("favourites").find({username: req.username},  {sort: {_id: -1}, limit: 5}).toArray(function(err, result){
-				//dbo.collection("comments").find({recipeId: parseInt(req.params.recipeId)}).toArray(function(err, result){
+			if (err) throw err;
+			console.log('EHERE');
+			let dbo = db.db("mydb");
+			//db.rating.update({"username" : "yaaliny", "recipeId" : "74172"}, {"username" : "yaaliny", "recipeId" : "74172" , "rating": "2"} , { upsert: true });
+			dbo.collection("rating").update({username: username, recipeId: recipeId } , {username: username, recipeId: recipeId, rating: parseInt(rating), title:title, readyInMinutes: readyInMinutes, servings: servings}, { upsert: true }  , function(err, result) {
+				if (err) return res.status(500).end("internal server error");
+				
+				dbo.collection("rating").aggregate([ {$group: { _id: "$recipeId", avgRate: { $avg: "$rating" } } }, { $match: { "_id": recipeId } } ]).toArray(function(err, result){
 					if (err) return res.status(500).end("internal server error");
+						console.log("TESTfaeTTTTT");
+						console.log(result);
+						console.log(result[0]);
+						console.log(result[0]._id);
+						//{ _id: '74172', avgRate: 4.5 }
+						 console.log(req.body);
+						dbo.collection("avgrating").update({_id: result[0]._id } , {recipeId: result[0]._id, avgRate: result[0].avgRate, title: title, readyInMinutes: readyInMinutes, servings: servings }, { upsert: true }  , function(err, result) {
+							if (err) return res.status(500).end("internal server error");
+						});
+					}); 
+				
+				return res.json(rating);
+				db.close();
+			});
+		});
+	
+});
+
+app.get('/api/rating/:username/:recipeId/', isAuthenticated, function (req, res, next) {
+	console.log("HIT");
+    let username = req.params.username;
+    let recipeId = req.params.recipeId;
+	 //let rating = req.params.rating;
+    	console.log('HERE');
+		MongoClient.connect(url, function(err, db) {
+			if (err) throw err;
+			console.log('EHERE');
+			let dbo = db.db("mydb");
+			dbo.collection("rating").findOne({username: username, recipeId: recipeId }, function(err, result) {
+				if (err) return res.status(500).end("internal server error");
+				console.log(result);
+				if(result) {
+					return res.json(result.rating.toString());
+				} else {
+					return res.json(0);
+				}
+				
+				db.close();
+			});
+		});
+	
+});
+
+app.get('/api/rating/:recipeId/', function (req, res, next) {
+	console.log("HITTT");
+    let recipeId = req.params.recipeId;
+	 //let rating = req.params.rating;
+	 console.log(recipeId);
+    
+    	console.log('HERE');
+		
+		MongoClient.connect(url, function(err, db) {
+			if (err) throw err;
+			console.log('EHERE');
+			let dbo = db.db("mydb");
+			
+			//dbo.collection("rating").aggregate([ {$group: { _id: "$recipeId", avgRate: { $avg: "$rating" } } }, { $match: { "_id": recipeId } }], function(err, result) {
+				dbo.collection("avgrating").findOne({_id: recipeId}, function(err, result) {
+					if (err) return res.status(500).end("internal server error");
+					console.log("AVERAGE");
 					console.log(result);
-					return res.json(result);
+					if(result) {
+						
+						console.log(Math.round(result.avgRate * 10) / 10);
+						return res.json((Math.round(result.avgRate * 10) / 10).toString());
+					} else {
+						return res.json(0);
+					}
+					//return res.json(result);
 					db.close();
 				});
-			});
-	} else {
-		return res.status(404).end('User not authenticated');
-	}
-});
-
-
-// ADD COMMENTS TO RECIPE
-app.post('/api/comments/', function (req, res, next) {
-    let username = req.body.username;
-    let recipeId = req.body.recipeId;
-    let content = req.body.content;
-
-    if(isAuthenticated(req, res, next)){
-		MongoClient.connect(url, function(err, db) {
-			if (err) throw err;
-			let dbo = db.db("mydb");
-			dbo.collection("comments").insertOne({username: req.username, recipeId: recipeId, content: content, date: new Date()}, function(err, result) {
-				if (err) return res.status(500).end("internal server error");
-				console.log(result);
-				return res.json(JSON.parse(result));
-				db.close();
-			});
 		});
-	} else {
-		return res.status(404).end('User not authenticated');
-	}
-});
-
-// Delete comment
-
-app.delete('/api/comments/:id/', function (req, res, next) {
-	if(isAuthenticated(req, res, next)){
-		MongoClient.connect(url, function(err, db) {
-			console.log('herehere');
-			if (err) throw err;
-			let dbo = db.db("mydb");
-			dbo.collection("comments").findOne({_id: new mongo.ObjectId(req.params.id)}, function(err, result) {
-				if (err) return res.status(500).end("internal server error");
-				if(!result) return res.status(404).end('comment not found');
-				// check if comment is owned by the user
-				console.log(req.username);
-				console.log(result.username);
-				if(req.username !== '' && result.username === req.username){
-					dbo.collection("comments").removeOne({_id: new mongo.ObjectId(req.params.id)}, function(err, result) {
-						if (err) return res.status(500).end("internal server error");
-						return res.json('Comment removed from database');
-						db.close();
-					});
-				} else {
-					db.close();
-					return res.status(401).end('User not authenticated to delete this message');
-				}
-			});
-		});
-	} else {
-		return res.status(401).end('User not authenticated');
-	}
-});
-
-//get all comments for a recipe
-
-app.get('/api/comments/:recipeId/', function(req, res, next){
-	MongoClient.connect(url, function(err, db) {
-			if (err) throw err;
-			let dbo = db.db("mydb");
-			//dbo.collection("comments").find({recipeId: req.params.recipeId},  {sort: {_id: -1}, limit: 10}).toArray(function(err, result){
-			dbo.collection("comments").find({recipeId: req.params.recipeId}).toArray(function(err, result){
-				if (err) return res.status(500).end("internal server error");
-				console.log(result);
-				return res.json(result);
-				db.close();
-			});
-		});
+	
 });
 
 
+
+
+
+
+
+
+
+/*
 app.post('/api/delete/', function(req, res, next){
 	console.log('DELETE');
 	MongoClient.connect(url, function(err, db) {

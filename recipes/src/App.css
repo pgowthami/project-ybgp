@@ -23,25 +23,35 @@
     color: white;
 }
 
-#account-button {
-    flex: 0 1 auto;
-    margin-left: auto;
-    margin-right: 20px;
+.account-button {
     background:white;
     width:120px;
     height:30px;
+}
+
+#signout-button {
+    flex: 0 1 auto;
+    margin-left: auto;
+    margin-right: 20px;
+}
+
+#changepassword-button{
+    margin-left: 800px;
+    margin-right:0px;
+    width: 150px;
 }
 
 #user-name {
     margin-right:auto;
     margin-left:20px;
     font-weight: bold;
+    width: 200px;
 }
 
 #title {
     font-size: 35px;
     margin:0px;
-    position: absolute; /* new */
+    position: absolute;
     left: 50%;
     transform: translateX(-50%);
 }
@@ -53,19 +63,28 @@
     left:50%;
 }
 
-.homepage-display{
+#signin-button {
+    flex: 0 1 auto;
+    margin-left: auto;
+    margin-right: 20px;
+}
+
+#user-suggestions {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    border-style: double;
+    width: 400px;
+    background-color: #E0E7E9;
 }
 
-#user-favourites{
-    display:flex;
-    flex-direction:column;
+#user-favourites {
+    display: flex;
+    flex-direction: column;
+    border-style: double;
+    width: 400px;
+    background-color: #E0E7E9;
 }
 
-.homepage-headings{
-
-}
 
 .App-link {
   color: #61dafb;

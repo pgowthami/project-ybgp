@@ -21,6 +21,7 @@
     "express": "^4.17.1",
     "helmet": "^3.22.0",
     "mongodb": "^3.5.5",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "validator": "^13.0.0"
   }
 }

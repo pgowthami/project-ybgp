@@ -24,10 +24,14 @@
     width: 1000px;
 }
 
-.recipe-part3{
-    
+#averagerate{
+    font-size:20px;
 }
 
+#add-ratings{
+    margin-top:10px;
+    font-size:20px;
+}
 
 .bullet{
     font-size:18px;

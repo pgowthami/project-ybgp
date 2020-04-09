@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import Moment from 'moment';
+import BeautyStars from 'beauty-stars';
 import './App.css';
 import './Recipe.css';
 
@@ -11,26 +12,28 @@ class Recipe extends Component {
 	state = {
 		instructions: [],
 		ingredients: [],
-		
 		loggedIn:false,
 		username: '',
 		commentsList: [],
-		showUserHomepage:false
+		showUserHomepage: false,
+		ratings: { value: 0 },
+		averagerating: '0',
 	};
 
 	componentDidMount = () => {
 		this.recipeId = this.props.location.state.recipeId;
 		
 		this.setState({loggedIn: this.props.location.state.loggedIn});
-		this.setState({ username: this.props.location.state.username});
-
+		//this.setState({ username: this.props.location.state.username});
+		this.state.username = this.props.location.state.username;
 		this.getIngredients();
 		this.getInstructions();
 		this.getComments();
 		if (this.props.location.state.loggedIn) {
 			this.getFavourite();
+			this.getRatings();
 		}
-		
+		this.getAverageRating();
     };
 
 	getIngredients = () => {
@@ -42,15 +45,21 @@ class Recipe extends Component {
 			//credentials: "same-origin"
 		});
 		fetchIngredients.then(response => {
+			if (response.status === 400) {
+				window.alert('Bad input. Please enter another ingredient.');
+				return null;
+			}
 			return response.json();
 		}).then(data => {
-			
+			if (data === null) {
+				return;
+			}
 			if (data === '[]') {
 				this.setState({ ingredients: [{ step: "Sorry, no data found" }] });
 				return;
 			}
-			this.setState({ ingredients: data });
-			
+			//this.setState({ ingredients: data });
+			this.state.ingredients = data;
 		});
 
 	};
@@ -64,8 +73,15 @@ class Recipe extends Component {
 			//credentials: "same-origin"
 		});
 		fetchInstructions.then(response => {
+			if (response.status === 400) {
+				window.alert('Bad input. Please enter a valid recipe id');
+				return null;
+			}
 			return response.json();
 		}).then(data => {
+			if (data === null) {
+				return;
+			}
 			if (data === '[]') {
 				this.setState({ instructions: [{ step: "Sorry, no data found" }] });
 				return;
@@ -102,7 +118,9 @@ class Recipe extends Component {
 		favRecipe.then(response => {
 			if (response.status === 200) {
 				document.getElementById('btn-favourite').innerHTML = 'Favourited!';
-			} else {
+			} else if (response.status === 400) {
+				window.alert('Bad input. Please enter a valid username and recipe id');
+			}else {
 				window.alert('An error occured');
 			}
 		});
@@ -119,7 +137,9 @@ class Recipe extends Component {
 			if (response.status === 200) {
 				document.getElementById('btn-favourite').innerHTML = 'Favourite';
 				console.log(document.getElementById('btn-favourite'));
-			} else {
+			} else if (response.status === 400) {
+				window.alert('Bad input. Please enter a valid username and recipe id');
+			}else {
 				window.alert('An error occured');
 			}
 		});
@@ -127,6 +147,7 @@ class Recipe extends Component {
 
 	addComment = () => {
 		let comment = document.getElementById('user-comment').value;
+		console.log(comment);
 		if (comment !== '') {
 			const addComment = fetch('/api/comments/', {
 				method: "POST",
@@ -140,11 +161,19 @@ class Recipe extends Component {
 				})
 			});
 			addComment.then(response => {
+				if (response.status === 400) {
+					window.alert('Bad input. Please enter a valid username and recipe id');
+					return null;
+				}
 				return response.json();
 			}).then(data => {
-				console.log((data.ops)[0]);
+				if (data === null) {
+					return;
+				}
 				let newComment = (data.ops)[0];
-				this.setState({ commentsList: [...this.state.commentsList, newComment] });
+				//this.setState({ commentsList: [...this.state.commentsList, newComment] });
+				this.state.commentsList.push(newComment);
+				console.log(this.state.commentsList);
 				this.getComments();
 				this.forceUpdate();
 			});
@@ -162,6 +191,8 @@ class Recipe extends Component {
 			if (response.status === 200) {
 				this.getComments();
 				this.forceUpdate();
+			} else if (response.status === 200) {
+				window.alert('Bad input. Please enter a valid comment id');
 			} else if (response.status === 401) {
 				window.alert('Unauthorized. Cannot delete this comment.');
 			} else if (response.status === 404) {
@@ -181,8 +212,15 @@ class Recipe extends Component {
 			},
 		});
 		fetchFavourite.then(response => {
+			if (response.status === 400) {
+				window.alert('Bad input. Please enter a valid recipe id.');
+				return null;
+			}
 			return response.json();
 		}).then(data => {
+			if (data === null) {
+				return;
+			}
 			if (data) {
 				document.getElementById('btn-favourite').innerHTML = 'Favourited!';
 			} else {
@@ -200,15 +238,96 @@ class Recipe extends Component {
 			},
 		});
 		fetchComments.then(response => {
+			if (response.status === 400) {
+				window.alert('Bad input. Please enter a valid recipe id.');
+				return null;
+			}
 			return response.json();
 		}).then(data => {
-			console.log(data);
+			if (data === null) {
+				return;
+			}
 			if (data === '[]') {
 				return;
 			}
-			this.setState({ commentsList: data});
+			//this.setState({ commentsList: data });
+			this.state.commentsList = data;
 		});
 	}
+
+
+	getAverageRating = () => {
+		const avgRateOfRecipe = fetch('/api/rating/' + this.recipeId + '/', {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json"
+			},
+		});
+		avgRateOfRecipe.then(response => {
+			return response.json();
+		}).then(value => {
+			console.log("TeSTTT");
+			console.log(value);
+			if (value > 0) {
+				console.log(value);
+				this.state.averagerating = value;
+				console.log(this.state.averagerating);
+				this.forceUpdate();
+				//document.getElementById('starrating').value = value;
+			}
+			return;
+		});
+	}
+
+
+	getRatings = () => {
+		console.log("USERNAME");
+		console.log(this.state.username);
+		const ratingOfRecipe = fetch('/api/rating/' + this.state.username + '/' + this.recipeId + '/', {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json"
+			},
+		});
+		ratingOfRecipe.then(response => {
+			return response.json();
+		}).then(value => {
+			console.log("TeSTTT");
+			console.log(value);
+			if (value > 0) {
+				this.setState({ ratings: { value } });
+				//this.state.ratings = value;
+				console.log(this.state.ratings.value);
+				this.forceUpdate();
+				//document.getElementById('starrating').value = value;
+			}
+			return;
+		});
+
+	};
+
+	rateRecipe = (value) => {
+		const ratingsRecipe = fetch('/api/rating/' + this.state.username + '/' + this.recipeId + '/' + value + '/', {
+			method: "POST",
+			body: JSON.stringify({
+				title: this.props.location.state.title, readyInMinutes: this.props.location.state.cookingTime,
+				servings: this.props.location.state.servings
+			}),
+			headers: {
+				"Content-Type": "application/json"
+			},
+		});
+		ratingsRecipe.then(response => {
+			return response.json();
+		}).then(data => {
+			this.setState({ ratings: { value } });
+			//this.state.ratings = value;
+			this.getAverageRating();
+			this.forceUpdate();
+		});
+
+	};
+
 
 	/*
 	signOut = () => {
@@ -276,10 +395,18 @@ class Recipe extends Component {
 					<div className='recipe-allparts'>
 					<div className='recipe-part1'>
 						<img src={this.props.location.state.image} alt={this.props.location.state.title}/>
-						<div id='cooking-time'>Cooking time: {this.props.location.state.cookingTime}</div>
+						<div id='cooking-time'>Cooking time: {this.props.location.state.cookingTime} mins</div>
 						<div id='servings'>Servings: {this.props.location.state.servings}</div>
-					</div>
-
+						<div id='averagerate'>Average Rating: {this.state.averagerating}/5</div>
+							{this.state.loggedIn &&
+								<div>
+								<div id='add-ratings'>Add your rating:</div>
+								<BeautyStars id="starrating"
+									value={this.state.ratings.value}
+									onChange={value => this.rateRecipe(value)} />
+							</div>
+							}
+						</div>
 						<div className='recipe-part2'>
 							<div className='heading'>Ingredients</div>
 							<ol>
