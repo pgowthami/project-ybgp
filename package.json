@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-	"heroku-postbuild": "cd recipes && npm install && npm run build"
+    "heroku-postbuild": "cd recipes && npm install && npm run build"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/UTSCC09/project-ybgp#readme",
   "dependencies": {
+    "bcrypt": "^4.0.1",
     "express": "^4.17.1",
     "helmet": "^3.22.0",
     "mongodb": "^3.5.5",
