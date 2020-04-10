@@ -29,11 +29,9 @@ class App extends Component {
 
 	componentDidMount = () => {
 		console.log(this.state);
-		console.log('HEHGKFJKFJ');
-		localStorage.clear();
 		// set local storage intially
 		if (localStorage.length === 0) {
-			//localStorage.setItem("recipes", JSON.stringify(this.state.recipes));
+			localStorage.setItem("recipes", JSON.stringify(this.state.recipes));
 			//localStorage.setItem('username', JSON.stringify(this.state.username));
 			//localStorage.setItem('loggedIn', JSON.stringify(this.state.loggedIn));
 			//localStorage.setItem('showLoginPage', JSON.stringify(this.state.showLoginPage));
@@ -54,13 +52,13 @@ class App extends Component {
 			// TODO: set values here instead of storing in local storage
 			this.setState({ showUserHomepage: true });
 			this.setState({ username: this.props.location.state.username });
-			this.stateState({ loggedIn: this.props.location.state.loggedIn });
+			this.setState({ loggedIn: this.props.location.state.loggedIn });
 			this.displayHomepage();
 		}
 
 		// update state variables with values from local storage
-		//let searchResults = JSON.parse(localStorage.getItem('recipes'));
-		//this.setState({ recipes: searchResults });
+		let searchResults = JSON.parse(localStorage.getItem('recipes'));
+		this.setState({ recipes: searchResults });
 		//this.setState({ username: JSON.parse(localStorage.getItem('username')) });
 		//this.setState({ loggedIn: JSON.parse(localStorage.getItem('loggedIn')) });
 		//this.setState({ showLoginPage: JSON.parse(localStorage.getItem('showLoginPage')) });
