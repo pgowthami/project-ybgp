@@ -24,16 +24,11 @@
     "react-toastify": "^5.5.0"
   },
   "scripts": {
-   
-	
-	"start": "NODE_ENV=production node server.js",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "client": "react-scripts start",
-    "server": "nodemon server",
-    "eject": "react-scripts eject",
-    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
-    "heroku-postbuild": "npm run build"
+    "eject": "react-scripts eject"
+	"heroku-postbuild": "cd recipes && npm install && npm run build"
   },
   "proxy": "http://localhost:5000/",
   "eslintConfig": {
