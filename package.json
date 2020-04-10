@@ -5,8 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "NODE_ENV=production node server.js",
-    "heroku-postbuild": "cd recipes && npm install && npm run build"
+    "start": "node server.js",
   },
   "repository": {
     "type": "git",
