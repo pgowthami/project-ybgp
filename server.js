@@ -459,43 +459,15 @@ app.get('/api/rating/:recipeId/', function (req, res, next) {
 });
 
 
-
-
-
-
-
-
-
-/*
-app.post('/api/delete/', function(req, res, next){
-	console.log('DELETE');
-	MongoClient.connect(url, function(err, db) {
-	  if (err) throw err;
-	  var dbo = db.db("mydb");
-	  dbo.collection("comments").drop(function(err, delOK) {
-	    if (err) throw err;
-	    if (delOK) console.log("comments deleted");
-	  });
-		dbo.collection("favourites").drop(function(err, delOK) {
-	    if (err) throw err;
-	    if (delOK) console.log("comments deleted");
-	  });
-
-
-	  db.close();
-	});
-	
-});
-/*
 const http = require('http');
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
     else console.log("HTTP server on http://localhost:%s", PORT);
 });
-*/
 
+/*
 const https = require('https');
 const PORT = process.env.PORT || 5000;
 
@@ -510,3 +482,4 @@ https.createServer(config, app).listen(PORT, function (err) {
     if (err) console.log(err);
     else console.log("HTTPS server on https://localhost:%s", PORT);
 });
+*/
