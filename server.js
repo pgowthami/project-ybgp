@@ -71,7 +71,8 @@ if (process.env.NODE_ENV === "production") {
 
   // Express will serve up the front-end index.html file if it doesn't recognize the route
   app.get("*", (req, res) =>
-    res.sendFile(path.resolve("build", "App.js"))
+    //res.sendFile(path.resolve("build", "App.js"))
+    res.sendFile(path.join(__dirname, 'recipes/build', 'index.html'))
   );
 }
 
