@@ -196,6 +196,7 @@ class App extends Component {
 			console.log(document.getElementById('favourite-message'));
 			if (data.length === 0) {
 				document.getElementById('favourite-message').innerHTML = 'You did not favourite any recipes.';
+				this.setState({ userFavourites: [] });
 				this.forceUpdate();
 				return;
 			}
