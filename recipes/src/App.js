@@ -200,7 +200,8 @@ class App extends Component {
 				return;
 			}
 			document.getElementById('favourite-message').innerHTML = '';
-			this.setState({ userFavourites: data });
+			//this.setState({ userFavourites: data });
+			this.state.userFavourites = data;
 		});
 	}
 
