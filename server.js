@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 
 const cookie = require('cookie');
 
-app.use(express.static(__dirname + '/recipes/src/'));
+//app.use(express.static(__dirname + '/recipes/src/'));
 
 const session = require('express-session');
 app.use(session({
@@ -59,10 +59,12 @@ var checkIngredients = function(req, res, next) {
     if (!validator.isAlphanumeric(req.body.ingredients)) return res.status(400).end("bad input");
     next();
 };
-
+/*
 app.get('/', function(req, res, next) {  
           res.status(200).send("Hi, It works!")  
  });
+*/
+
 
 app.post('/signup/', checkUsername, function (req, res, next) {
 	if (!('username' in req.body)) return res.status(400).end('username is missing');
