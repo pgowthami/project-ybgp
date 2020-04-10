@@ -1,1 +1,2 @@
-web: cd recipes && npm start
+web: node server.js
+worker: cd recipes && npm start
