@@ -467,6 +467,7 @@ app.get('/api/rating/:recipeId/', function (req, res, next) {
 	
 });
 
+
 if (process.env.NODE_ENV == "production") {
   app.use(express.static(path.join(__dirname+ "/recipes/build")));
 
@@ -474,6 +475,7 @@ if (process.env.NODE_ENV == "production") {
     res.sendFile(path.join(__dirname, "recipes/build/index.html"));
   });
 }
+
 
 const http = require('http');
 const PORT = process.env.PORT || 5000;
