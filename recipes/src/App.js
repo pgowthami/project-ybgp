@@ -29,14 +29,16 @@ class App extends Component {
 
 	componentDidMount = () => {
 		console.log(this.state);
+		console.log('HEHGKFJKFJ');
+		localStorage.clear();
 		// set local storage intially
 		if (localStorage.length === 0) {
-			localStorage.setItem("recipes", JSON.stringify(this.state.recipes));
-			localStorage.setItem('username', JSON.stringify(this.state.username));
-			localStorage.setItem('loggedIn', JSON.stringify(this.state.loggedIn));
-			localStorage.setItem('showLoginPage', JSON.stringify(this.state.showLoginPage));
-			localStorage.setItem('userFavourites', JSON.stringify(this.state.userFavourites));
-			localStorage.setItem('userSuggestions', JSON.stringify(this.state.userSuggestions));
+			//localStorage.setItem("recipes", JSON.stringify(this.state.recipes));
+			//localStorage.setItem('username', JSON.stringify(this.state.username));
+			//localStorage.setItem('loggedIn', JSON.stringify(this.state.loggedIn));
+			//localStorage.setItem('showLoginPage', JSON.stringify(this.state.showLoginPage));
+			//localStorage.setItem('userFavourites', JSON.stringify(this.state.userFavourites));
+			//localStorage.setItem('userSuggestions', JSON.stringify(this.state.userSuggestions));
 		}
 
 
@@ -49,31 +51,34 @@ class App extends Component {
 
 		// if user clicks on 'Homepage' button
 		if (this.props.location.state && this.props.location.state.showUserHomepage) {
+			// TODO: set values here instead of storing in local storage
 			this.setState({ showUserHomepage: true });
+			this.setState({ username: this.props.location.state.username });
+			this.stateState({ loggedIn: this.props.location.state.loggedIn });
 			this.displayHomepage();
 		}
 
 		// update state variables with values from local storage
-		let searchResults = JSON.parse(localStorage.getItem('recipes'));
-	
-		this.setState({ recipes: searchResults });
-		this.setState({ username: JSON.parse(localStorage.getItem('username')) });
-		this.setState({ loggedIn: JSON.parse(localStorage.getItem('loggedIn')) });
-		this.setState({ showLoginPage: JSON.parse(localStorage.getItem('showLoginPage')) });
-		this.setState({ userFavourites: JSON.parse(localStorage.getItem('userFavourites')) });
-		this.setState({ userSuggestions: JSON.parse(localStorage.getItem('userSuggestions')) });
+		//let searchResults = JSON.parse(localStorage.getItem('recipes'));
+		//this.setState({ recipes: searchResults });
+		//this.setState({ username: JSON.parse(localStorage.getItem('username')) });
+		//this.setState({ loggedIn: JSON.parse(localStorage.getItem('loggedIn')) });
+		//this.setState({ showLoginPage: JSON.parse(localStorage.getItem('showLoginPage')) });
+		//this.setState({ userFavourites: JSON.parse(localStorage.getItem('userFavourites')) });
+		//this.setState({ userSuggestions: JSON.parse(localStorage.getItem('userSuggestions')) });
 		
 		console.log(this.state);
 		this.forceUpdate();
 	}
 
 	componentDidUpdate = () => {
-		localStorage.setItem("recipes", JSON.stringify(this.state.recipes));
-		localStorage.setItem('username', JSON.stringify(this.state.username));
-		localStorage.setItem('loggedIn', JSON.stringify(this.state.loggedIn));
-		localStorage.setItem('showLoginPage', JSON.stringify(this.state.showLoginPage));
-		localStorage.setItem('userFavourites', JSON.stringify(this.state.userFavourites));
-		localStorage.setItem('userSuggestions', JSON.stringify(this.state.userSuggestions));
+		console.log('JKSDHGJKHG');
+		//localStorage.setItem("recipes", JSON.stringify(this.state.recipes));
+		//localStorage.setItem('username', JSON.stringify(this.state.username));
+		//localStorage.setItem('loggedIn', JSON.stringify(this.state.loggedIn));
+		//localStorage.setItem('showLoginPage', JSON.stringify(this.state.showLoginPage));
+		//localStorage.setItem('userFavourites', JSON.stringify(this.state.userFavourites));
+		//localStorage.setItem('userSuggestions', JSON.stringify(this.state.userSuggestions));
 	}
 	/*
 	delete = () => {
@@ -176,10 +181,10 @@ class App extends Component {
 	};
 
 	removeUser = () => {
-		localStorage.setItem('username', JSON.stringify(this.state.username));
-		localStorage.setItem('loggedIn', JSON.stringify(this.state.loggedIn));
-		localStorage.setItem('showLoginPage', JSON.stringify(this.state.showLoginPage));
-		localStorage.setItem('recipes', JSON.stringify(this.state.recipes));
+		//localStorage.setItem('username', JSON.stringify(this.state.username));
+		//localStorage.setItem('loggedIn', JSON.stringify(this.state.loggedIn));
+		//localStorage.setItem('showLoginPage', JSON.stringify(this.state.showLoginPage));
+		//localStorage.setItem('recipes', JSON.stringify(this.state.recipes));
 	}
 
 	getUserFavourites = () => {
