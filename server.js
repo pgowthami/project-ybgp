@@ -19,7 +19,9 @@ app.use(bodyParser.json());
 const cookie = require('cookie');
 
 //app.use(express.static(__dirname + '/recipes/src/'));
+
 app.use(express.static(path.join(__dirname, 'recipes/build')));
+
 const session = require('express-session');
 app.use(session({
     secret: 'my secret',
@@ -466,7 +468,7 @@ app.get('/api/rating/:recipeId/', function (req, res, next) {
 });
 
 if (process.env.NODE_ENV == "production") {
-  app.use(express.static(path.join(__dirname, "recipes/build")));
+  app.use(express.static(path.join(__dirname+ "/recipes/build")));
 
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "recipes/build/index.html"));
@@ -475,12 +477,14 @@ if (process.env.NODE_ENV == "production") {
 
 const http = require('http');
 const PORT = process.env.PORT || 5000;
+app.listen(PORT);
 
+/*
 http.createServer(app).listen(PORT, function (err) {
     if (err) console.log(err);
     else console.log("HTTP server on http://localhost:%s", PORT);
 });
-
+*/
 /*
 const https = require('https');
 const PORT = process.env.PORT || 5000;
