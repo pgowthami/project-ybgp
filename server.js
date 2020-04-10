@@ -29,7 +29,7 @@ app.use(session({
 
 app.use(function (req, res, next){
     req.username = req.session.username;
-    console.log("HTTPS request", req.method, req.url, req.body);
+    console.log("HTTP request", req.method, req.url, req.body);
     next();
 });
 
@@ -60,7 +60,10 @@ var checkIngredients = function(req, res, next) {
     next();
 };
 
-
+app.get('/', function(req, res, next) {  
+          res.status(200).send("Hi, It works!")  
+ });
+   
 app.post('/signup/', checkUsername, function (req, res, next) {
 	if (!('username' in req.body)) return res.status(400).end('username is missing');
     if (!('password' in req.body)) return res.status(400).end('password is missing');
