@@ -19,7 +19,7 @@ app.use(bodyParser.json());
 const cookie = require('cookie');
 
 //app.use(express.static(__dirname + '/recipes/src/'));
-
+app.use(express.static(path.join(__dirname, 'recipes/build')));
 const session = require('express-session');
 app.use(session({
     secret: 'my secret',
