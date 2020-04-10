@@ -65,6 +65,16 @@ app.get('/', function(req, res, next) {
  });
 */
 
+if (process.env.NODE_ENV === "production") {
+  // Express will serve up production assets
+  app.use(express.static("build"));
+
+  // Express will serve up the front-end index.html file if it doesn't recognize the route
+  app.get("*", (req, res) =>
+    res.sendFile(path.resolve("build", "App.js"))
+  );
+}
+
 
 app.post('/signup/', checkUsername, function (req, res, next) {
 	if (!('username' in req.body)) return res.status(400).end('username is missing');
