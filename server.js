@@ -59,11 +59,11 @@ var checkIngredients = function(req, res, next) {
     if (!validator.isAlphanumeric(req.body.ingredients)) return res.status(400).end("bad input");
     next();
 };
-/*
+
 app.get('/', function(req, res, next) {  
           res.status(200).send("Hi, It works!")  
  });
-*/
+
 
 
 
