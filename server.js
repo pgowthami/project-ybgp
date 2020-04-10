@@ -465,25 +465,30 @@ app.get('/api/rating/:recipeId/', function (req, res, next) {
 });
 
 
+const http = require('http');
+const PORT = process.env.PORT || 5000;
+app.listen(PORT);
+
 if (process.env.NODE_ENV == "production") {
   app.use(express.static(path.join(__dirname+ "/recipes/build")));
 
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "recipes/build/index.html"));
   });
+
 }
 
 
-const http = require('http');
-const PORT = process.env.PORT || 5000;
-app.listen(PORT);
 
 /*
 http.createServer(app).listen(PORT, function (err) {
-    if (err) console.log(err);
-    else console.log("HTTP server on http://localhost:%s", PORT);
+   if (err) console.log(err);
+   else console.log("HTTP server on http://localhost:%s", PORT);
 });
 */
+
+
+
 /*
 const https = require('https');
 const PORT = process.env.PORT || 5000;
