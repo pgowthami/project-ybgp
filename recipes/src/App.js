@@ -48,7 +48,7 @@ class App extends Component {
 		}
 
 		// if user clicks on 'Homepage' button
-		if (this.props.location.state && this.props.location.state.showUserHomepage) {
+		if ((this.props.location.state && this.props.location.state.showUserHomepage) || this.state.showUserHomepage) {
 			this.setState({ showUserHomepage: true });
 			this.displayHomepage();
 		}
