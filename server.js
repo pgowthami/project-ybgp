@@ -246,7 +246,7 @@ app.get('/api/favourite/:id/', isAuthenticated, checkId, function(req, res, next
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
 		let dbo = db.db("heroku_xd79spf1");
-		dbo.collection("favourites").findOne({username: username, recipeId: recipeId}, function(err, result) {
+		dbo.collection("favourites").findOne({username: req.username, recipeId: recipeId}, function(err, result) {
 			if (err) return res.status(500).end("internal server error");
 			console.log(result);
 			return res.json(result);
@@ -358,7 +358,7 @@ app.get('/api/toprating/:recipeId/', isAuthenticated, function(req, res, next){
 		MongoClient.connect(url, function(err, db) {
 			if (err) throw err;
 			let dbo = db.db("heroku_xd79spf1");
-			dbo.collection("favourites").findOne({username: username, recipeId: recipeId}, function(err, result) {
+			dbo.collection("favourites").findOne({username: req.username, recipeId: recipeId}, function(err, result) {
 				if (err) return res.status(500).end("internal server error");
 				console.log(result);
 				return res.json(result);
@@ -384,7 +384,7 @@ app.post('/api/rating/:username/:recipeId/:rating/', isAuthenticated, function (
 			console.log('EHERE');
 			let dbo = db.db("heroku_xd79spf1");
 			//db.rating.update({"username" : "yaaliny", "recipeId" : "74172"}, {"username" : "yaaliny", "recipeId" : "74172" , "rating": "2"} , { upsert: true });
-			dbo.collection("rating").update({username: username, recipeId: recipeId } , {username: username, recipeId: recipeId, rating: parseInt(rating), title:title, readyInMinutes: readyInMinutes, servings: servings}, { upsert: true }  , function(err, result) {
+			dbo.collection("rating").update({username: req.username, recipeId: recipeId } , {username: req.username, recipeId: recipeId, rating: parseInt(rating), title:title, readyInMinutes: readyInMinutes, servings: servings}, { upsert: true }  , function(err, result) {
 				if (err) return res.status(500).end("internal server error");
 				
 				dbo.collection("rating").aggregate([ {$group: { _id: "$recipeId", avgRate: { $avg: "$rating" } } }, { $match: { "_id": recipeId } } ]).toArray(function(err, result){
@@ -417,7 +417,7 @@ app.get('/api/rating/:username/:recipeId/', isAuthenticated, function (req, res,
 			if (err) throw err;
 			console.log('EHERE');
 			let dbo = db.db("heroku_xd79spf1");
-			dbo.collection("rating").findOne({username: username, recipeId: recipeId }, function(err, result) {
+			dbo.collection("rating").findOne({username: req.username, recipeId: recipeId }, function(err, result) {
 				if (err) return res.status(500).end("internal server error");
 				console.log(result);
 				if(result) {
