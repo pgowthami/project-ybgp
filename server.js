@@ -58,15 +58,10 @@ var checkId = function(req, res, next) {
 };
 
 var checkIngredients = function(req, res, next) {
-   // if (!validator.isAlphanumeric(req.body.ingredients)) return res.status(400).end("bad input");
     if(!validator.matches(req.body.ingredients,(/^[a-z0-9 ]+$/i))) return res.status(400).end('bad input');
     next();
 };
-/*
-app.get('/', function(req, res, next) {  
-          res.status(200).send("Hi, It works!")  
- });
- */
+
 
 app.post('/signup/', checkUsername, function (req, res, next) {
 	if (!('username' in req.body)) return res.status(400).end('username is missing');
@@ -83,9 +78,6 @@ app.post('/signup/', checkUsername, function (req, res, next) {
 					  if (user.length > 0) return res.status(409).end("username " + username + " already exists");
 					  dbo.collection("users").insertOne({_id: username, hash}, function(err, result) {
 					  	if (err) return res.status(500).end("internal server error");
-				    	console.log("1 user inserted");
-						console.log(result.username);
-				
 		            	res.setHeader('Set-Cookie', cookie.serialize('username', username, {
 		                  	path : '/', 
 		                  	maxAge: 60 * 60 * 24 * 7
@@ -143,13 +135,13 @@ app.post('/changePassword/', isAuthenticated, function (req, res, next) {
 	bcrypt.genSalt(10, function(err, salt) {
 	bcrypt.hash(password1, salt, function(err, hash) {
 		MongoClient.connect(url, function(err, db) {
-			  if (err) throw err;
-			  var dbo = db.db("heroku_xd79spf1");
-			  dbo.collection("users").find({ _id: username}).toArray(function(err, user) {
-			      if (err) throw err;				   
-				  if (!user) return res.status(409).end("username does not exist");
-				  dbo.collection("users").replaceOne({_id: username}, {_id: username, hash}, function(err, result) {
-				  	if (err) return res.status(500).end("internal server error");
+			if (err) throw err;
+			var dbo = db.db("heroku_xd79spf1");
+			dbo.collection("users").find({ _id: username}).toArray(function(err, user) {
+			    if (err) throw err;				   
+				if (!user) return res.status(409).end("username does not exist");
+				dbo.collection("users").replaceOne({_id: username}, {_id: username, hash}, function(err, result) {
+					if (err) return res.status(500).end("internal server error");
 	            	return res.json('Password has been changed');
 			    	db.close();
 				  	});          
@@ -162,8 +154,8 @@ app.post('/changePassword/', isAuthenticated, function (req, res, next) {
 // curl -b cookie.txt -c cookie.txt localhost:3000/signout/
 app.post('/signout/', function (req, res, next) {
     res.setHeader('Set-Cookie', cookie.serialize('username', '', {
-          path : '/', 
-          maxAge: 60 * 60 * 24 * 7 // 1 week in number of seconds
+         path : '/', 
+         maxAge: 60 * 60 * 24 * 7 // 1 week in number of seconds
     }));
     req.session.destroy();
     return res.end("user has been signed out");   
@@ -174,40 +166,36 @@ app.post('/signout/', function (req, res, next) {
 let apiKey = '3bd6b3501a044f70b65971f869776dfb';
 //let apiKey = 'ee29c579c7af4db59e00ba30158a11a9';
 app.post('/api/recipes/', checkIngredients, function (req, res, next) {
-	 console.log(req.body);
-	 console.log(req.body.ingredients);
-
- 	Request.get("https://api.spoonacular.com/recipes/search?apiKey="+apiKey+"&query=" + req.body.ingredients, (error, response, body) => {
-	     if(error) {
-	         return console.dir(error);
-	     }
-		 return res.json(body);
+ 	Request.get("https://api.spoonacular.com/recipes/search?apiKey="+apiKey+"&query=" + req.body.ingredients+"&number=21", (error, response, body) => {
+	    if(error) {
+	        return console.dir(error);
+	    }
+		return res.json(body);
 	 });
 });
 
 app.get('/api/instructions/:id/', checkId, function (req, res, next) {	
  	Request.get("https://api.spoonacular.com/recipes/" + req.params.id + "/analyzedInstructions?apiKey="+apiKey, (error, response, body) => {
-	     if(error) {
-	         return console.dir(error);
-	     }
-		 return res.json(body);
+		if(error) {
+			return console.dir(error);
+		}
+		return res.json(body);
 		 
 	 });
 });
 
 app.get('/api/ingredients/:id/', checkId, function (req, res, next) {
- Request.get("https://api.spoonacular.com/recipes/" + req.params.id + "/information?apiKey="+apiKey, (error, response, body) => {
-	     if(error) {
-	         return console.dir(error);
-	     }
-		 return res.json(JSON.parse(body).extendedIngredients);
-		 
-	 });
+	Request.get("https://api.spoonacular.com/recipes/" + req.params.id + "/information?apiKey="+apiKey, (error, response, body) => {
+		if(error) {
+		 return console.dir(error);
+		}
+		return res.json(JSON.parse(body).extendedIngredients);
+
+	});
 });
 
 // FAVOURITE RECIPE
 app.post('/api/favourite/:username/:id/', isAuthenticated, checkId, function (req, res, next) {
-    let username = req.params.username;
     let recipeId = req.params.id;
     let readyInMinutes = req.body.readyInMinutes;
     let servings = req.body.servings;
@@ -217,7 +205,6 @@ app.post('/api/favourite/:username/:id/', isAuthenticated, checkId, function (re
 		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("favourites").insertOne({username: req.username, recipeId: recipeId, title:title, readyInMinutes: readyInMinutes, servings: servings}, function(err, result) {
 			if (err) return res.status(500).end("internal server error");
-			console.log(result);
 			return res.json('recipe favourited');
 			db.close();
 		});
@@ -226,14 +213,12 @@ app.post('/api/favourite/:username/:id/', isAuthenticated, checkId, function (re
 
 // remove favourite
 app.post('/api/remove/favourite/:username/:id/', isAuthenticated, checkId, function (req, res, next) {
-    let username = req.params.username;
     let recipeId = req.params.id;
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
 		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("favourites").removeOne({username: req.username, recipeId: recipeId}, function(err, result) {
 			if (err) return res.status(500).end("internal server error");
-			console.log(result);
 			return res.json('recipe removed from favourites');
 			db.close();
 		});
@@ -242,14 +227,12 @@ app.post('/api/remove/favourite/:username/:id/', isAuthenticated, checkId, funct
 
 // get favourite status for a recipe
 app.get('/api/favourite/:id/', isAuthenticated, checkId, function(req, res, next){
-	let username = req.username;
 	let recipeId = req.params.id;
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
 		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("favourites").findOne({username: req.username, recipeId: recipeId}, function(err, result) {
 			if (err) return res.status(500).end("internal server error");
-			console.log(result);
 			return res.json(result);
 			db.close();
 		});
@@ -263,9 +246,7 @@ app.get('/api/favourites/', isAuthenticated, function(req, res, next){
 		if (err) throw err;
 		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("favourites").find({username: req.username},  {sort: {_id: -1}, limit: 5}).toArray(function(err, result){
-		//dbo.collection("comments").find({recipeId: parseInt(req.params.recipeId)}).toArray(function(err, result){
 			if (err) return res.status(500).end("internal server error");
-			console.log(result);
 			return res.json(result);
 			db.close();
 		});
@@ -275,7 +256,6 @@ app.get('/api/favourites/', isAuthenticated, function(req, res, next){
 
 // ADD COMMENTS TO RECIPE
 app.post('/api/comments/', isAuthenticated, sanitizeContent, function (req, res, next) {
-    let username = req.body.username;
     let recipeId = req.body.recipeId;
     let content = req.body.content;
 	MongoClient.connect(url, function(err, db) {
@@ -283,7 +263,6 @@ app.post('/api/comments/', isAuthenticated, sanitizeContent, function (req, res,
 		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("comments").insertOne({username: req.username, recipeId: recipeId, content: content, date: new Date()}, function(err, result) {
 			if (err) return res.status(500).end("internal server error");
-			console.log(result);
 			return res.json(JSON.parse(result));
 			db.close();
 		});
@@ -321,9 +300,7 @@ app.get('/api/comments/:id/', checkId, function(req, res, next){
 		if (err) throw err;
 		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("comments").find({recipeId: req.params.id},  {sort: {date: -1}, limit: 10}).toArray(function(err, result){
-		//dbo.collection("comments").find({recipeId: req.params.id} ).toArray(function(err, result){
 			if (err) return res.status(500).end("internal server error");
-			console.log(result);
 			return res.json(result);
 			db.close();
 		});
@@ -332,137 +309,101 @@ app.get('/api/comments/:id/', checkId, function(req, res, next){
 
 
 // RATINGS
-
 // get the latest 5 favourites of user
 app.get('/api/toprecipes/', isAuthenticated, function(req, res, next){
-	console.log("HITTTED");
-
-		MongoClient.connect(url, function(err, db) {
-				if (err) throw err;
-				let dbo = db.db("heroku_xd79spf1");
-				dbo.collection("avgrating").find({},  {sort: {avgRate: -1}, limit: 5}).toArray(function(err, result){
-				//dbo.collection("comments").find({recipeId: parseInt(req.params.recipeId)}).toArray(function(err, result){
-					if (err) return res.status(500).end("internal server error");
-					console.log(result);
-					return res.json(result);
-					db.close();
-				});
-			});
-
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		let dbo = db.db("heroku_xd79spf1");
+		dbo.collection("avgrating").find({},  {sort: {avgRate: -1}, limit: 5}).toArray(function(err, result){
+			if (err) return res.status(500).end("internal server error");
+			return res.json(result);
+			db.close();
+		});
+	});
 });
 
-// get favourite status for a recipe
-app.get('/api/toprating/:recipeId/', isAuthenticated, function(req, res, next){
-	let username = req.username;
-	let recipeId = req.params.recipeId;
 
-		MongoClient.connect(url, function(err, db) {
-			if (err) throw err;
-			let dbo = db.db("heroku_xd79spf1");
-			dbo.collection("favourites").findOne({username: req.username, recipeId: recipeId}, function(err, result) {
-				if (err) return res.status(500).end("internal server error");
-				console.log(result);
-				return res.json(result);
-				db.close();
-			});
+// get favourite status for a recipe
+app.get('/api/toprating/:id/', isAuthenticated, checkId, function(req, res, next){
+	let username = req.username;
+	let recipeId = req.params.id;
+
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		let dbo = db.db("heroku_xd79spf1");
+		dbo.collection("favourites").findOne({username: req.username, recipeId: recipeId}, function(err, result) {
+			if (err) return res.status(500).end("internal server error");
+			return res.json(result);
+			db.close();
 		});
+	});
 	
 });
 
-app.post('/api/rating/:username/:recipeId/:rating/', isAuthenticated, function (req, res, next) {
-    let username = req.params.username;
-    let recipeId = req.params.recipeId;
+
+app.post('/api/rating/:username/:id/:rating/', isAuthenticated, checkId, function (req, res, next) {
+    let recipeId = req.params.id;
 	 let rating = req.params.rating;
 	 let readyInMinutes = req.body.readyInMinutes;
 	 let servings = req.body.servings;
 	 let title = req.body.title;
-	 console.log("POST RATE");
-	 console.log(req.body);
 
-    	console.log('HERE');
-		MongoClient.connect(url, function(err, db) {
-			if (err) throw err;
-			console.log('EHERE');
-			let dbo = db.db("heroku_xd79spf1");
-			//db.rating.update({"username" : "yaaliny", "recipeId" : "74172"}, {"username" : "yaaliny", "recipeId" : "74172" , "rating": "2"} , { upsert: true });
-			dbo.collection("rating").update({username: req.username, recipeId: recipeId } , {username: req.username, recipeId: recipeId, rating: parseInt(rating), title:title, readyInMinutes: readyInMinutes, servings: servings}, { upsert: true }  , function(err, result) {
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		let dbo = db.db("heroku_xd79spf1");
+		dbo.collection("rating").update({username: req.username, recipeId: recipeId } , {username: req.username, recipeId: recipeId, rating: parseInt(rating), title:title, readyInMinutes: readyInMinutes, servings: servings}, { upsert: true }  , function(err, result) {
+			if (err) return res.status(500).end("internal server error");
+			dbo.collection("rating").aggregate([ {$group: { _id: "$recipeId", avgRate: { $avg: "$rating" } } }, { $match: { "_id": recipeId } } ]).toArray(function(err, result){
 				if (err) return res.status(500).end("internal server error");
-				
-				dbo.collection("rating").aggregate([ {$group: { _id: "$recipeId", avgRate: { $avg: "$rating" } } }, { $match: { "_id": recipeId } } ]).toArray(function(err, result){
-					if (err) return res.status(500).end("internal server error");
-						console.log("TESTfaeTTTTT");
-						console.log(result);
-						console.log(result[0]);
-						console.log(result[0]._id);
-						//{ _id: '74172', avgRate: 4.5 }
-						 console.log(req.body);
-						dbo.collection("avgrating").update({_id: result[0]._id } , {recipeId: result[0]._id, avgRate: result[0].avgRate, title: title, readyInMinutes: readyInMinutes, servings: servings }, { upsert: true }  , function(err, result) {
-							if (err) return res.status(500).end("internal server error");
-						});
-					}); 
-				
-				return res.json(rating);
-				db.close();
-			});
-		});
-	
-});
-
-app.get('/api/rating/:username/:recipeId/', isAuthenticated, function (req, res, next) {
-	console.log("HIT");
-    let username = req.params.username;
-    let recipeId = req.params.recipeId;
-	 //let rating = req.params.rating;
-    	console.log('HERE');
-		MongoClient.connect(url, function(err, db) {
-			if (err) throw err;
-			console.log('EHERE');
-			let dbo = db.db("heroku_xd79spf1");
-			dbo.collection("rating").findOne({username: req.username, recipeId: recipeId }, function(err, result) {
-				if (err) return res.status(500).end("internal server error");
-				console.log(result);
-				if(result) {
-					return res.json(result.rating.toString());
-				} else {
-					return res.json(0);
-				}
-				
-				db.close();
-			});
-		});
-	
-});
-
-app.get('/api/rating/:recipeId/', function (req, res, next) {
-	console.log("HITTT");
-    let recipeId = req.params.recipeId;
-	 //let rating = req.params.rating;
-	 console.log(recipeId);
-    
-    	console.log('HERE');
-		
-		MongoClient.connect(url, function(err, db) {
-			if (err) throw err;
-			console.log('EHERE');
-			let dbo = db.db("heroku_xd79spf1");
-			
-			//dbo.collection("rating").aggregate([ {$group: { _id: "$recipeId", avgRate: { $avg: "$rating" } } }, { $match: { "_id": recipeId } }], function(err, result) {
-				dbo.collection("avgrating").findOne({_id: recipeId}, function(err, result) {
-					if (err) return res.status(500).end("internal server error");
-					console.log("AVERAGE");
-					console.log(result);
-					if(result) {
-						
-						console.log(Math.round(result.avgRate * 10) / 10);
-						return res.json((Math.round(result.avgRate * 10) / 10).toString());
-					} else {
-						return res.json(0);
-					}
-					//return res.json(result);
-					db.close();
+					dbo.collection("avgrating").update({_id: result[0]._id } , {recipeId: result[0]._id, avgRate: result[0].avgRate, title: title, readyInMinutes: readyInMinutes, servings: servings }, { upsert: true }  , function(err, result) {
+						if (err) return res.status(500).end("internal server error");
+					});
 				});
+			return res.json(rating);
+			db.close();
 		});
+	});
 	
+});
+
+
+app.get('/api/rating/:username/:id/', isAuthenticated, checkId, function (req, res, next) {
+    let recipeId = req.params.recipeId;
+
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		let dbo = db.db("heroku_xd79spf1");
+		dbo.collection("rating").findOne({username: req.username, recipeId: recipeId }, function(err, result) {
+			if (err) return res.status(500).end("internal server error");
+			if(result) {
+				return res.json(result.rating.toString());
+			} else {
+				return res.json(0);
+			}
+			
+			db.close();
+		});
+	});
+});
+
+
+app.get('/api/rating/:id/', checkId, function (req, res, next) {
+    let recipeId = req.params.id;
+
+	MongoClient.connect(url, function(err, db) {
+		if (err) throw err;
+		let dbo = db.db("heroku_xd79spf1");
+
+		dbo.collection("avgrating").findOne({_id: recipeId}, function(err, result) {
+			if (err) return res.status(500).end("internal server error");
+			if(result) {
+				return res.json((Math.round(result.avgRate * 10) / 10).toString());
+			} else {
+				return res.json(0);
+			}
+			db.close();
+		});
+	});
 });
 
 
@@ -476,33 +417,4 @@ if (process.env.NODE_ENV == "production") {
   app.get("*", (req, res) => {
     res.sendFile(path.join(__dirname, "recipes/build/index.html"));
   });
-
 }
-
-
-
-/*
-http.createServer(app).listen(PORT, function (err) {
-   if (err) console.log(err);
-   else console.log("HTTP server on http://localhost:%s", PORT);
-});
-*/
-
-
-
-/*
-const https = require('https');
-const PORT = process.env.PORT || 5000;
-
-var privateKey = fs.readFileSync( 'server.key' );
-var certificate = fs.readFileSync( 'server.crt' );
-var config = {
-        key: privateKey,
-        cert: certificate
-};
-
-https.createServer(config, app).listen(PORT, function (err) {
-    if (err) console.log(err);
-    else console.log("HTTPS server on https://localhost:%s", PORT);
-});
-*/
