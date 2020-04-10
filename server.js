@@ -48,8 +48,7 @@ var checkUsername = function(req, res, next) {
 };
 
 var sanitizeContent = function(req, res, next) {
-    //req.body.content = validator.escape(req.body.content);
-    req.body.content = validator.matches(/^[a-z0-9 ]+$/i);
+    req.body.content = validator.escape(req.body.content);
     next();
 }
 
@@ -59,7 +58,8 @@ var checkId = function(req, res, next) {
 };
 
 var checkIngredients = function(req, res, next) {
-    if (!validator.isAlphanumeric(req.body.ingredients)) return res.status(400).end("bad input");
+   // if (!validator.isAlphanumeric(req.body.ingredients)) return res.status(400).end("bad input");
+    if(!validator.matches(req.body.ingredients,(/^[a-z0-9 ]+$/i))) return res.status(400).end('bad input');
     next();
 };
 /*
