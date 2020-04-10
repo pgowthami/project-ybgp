@@ -10,7 +10,7 @@ const validator = require('validator');
 
 var mongo = require('mongodb');
 const MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://heroku_xd79spf1:o89g3e51q29s02t22ce6qbhks7@ds113670.mlab.com:13670/heroku_xd79spf1";
+var url = process.env.MONGODB_URI || "mongodb://localhost:27017/";
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -70,7 +70,7 @@ app.post('/signup/', checkUsername, function (req, res, next) {
     	bcrypt.hash(password, salt, function(err, hash) {
 			MongoClient.connect(url, function(err, db) {
 				  if (err) throw err;
-				  var dbo = db.db("mydb");
+				  var dbo = db.db("heroku_xd79spf1");
 				  dbo.collection("users").find({ _id: username}).toArray(function(err, user) {
 				      if (err) throw err;				   
 					  if (user.length > 0) return res.status(409).end("username " + username + " already exists");
@@ -100,7 +100,7 @@ app.post('/signin/', checkUsername, function (req, res, next) {
     let password = req.body.password;
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
-		let dbo = db.db("mydb");
+		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("users").find({ _id: username}).toArray(function(err, result) {
 			if (err) throw err;
 		  	if(!result.length > 0) {
@@ -137,7 +137,7 @@ app.post('/changePassword/', isAuthenticated, function (req, res, next) {
 	bcrypt.hash(password1, salt, function(err, hash) {
 		MongoClient.connect(url, function(err, db) {
 			  if (err) throw err;
-			  var dbo = db.db("mydb");
+			  var dbo = db.db("heroku_xd79spf1");
 			  dbo.collection("users").find({ _id: username}).toArray(function(err, user) {
 			      if (err) throw err;				   
 				  if (!user) return res.status(409).end("username does not exist");
@@ -207,7 +207,7 @@ app.post('/api/favourite/:username/:id/', isAuthenticated, checkId, function (re
     let title = req.body.title;
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
-		let dbo = db.db("mydb");
+		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("favourites").insertOne({username: req.username, recipeId: recipeId, title:title, readyInMinutes: readyInMinutes, servings: servings}, function(err, result) {
 			if (err) return res.status(500).end("internal server error");
 			console.log(result);
@@ -223,7 +223,7 @@ app.post('/api/remove/favourite/:username/:id/', isAuthenticated, checkId, funct
     let recipeId = req.params.id;
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
-		let dbo = db.db("mydb");
+		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("favourites").removeOne({username: req.username, recipeId: recipeId}, function(err, result) {
 			if (err) return res.status(500).end("internal server error");
 			console.log(result);
@@ -239,7 +239,7 @@ app.get('/api/favourite/:id/', isAuthenticated, checkId, function(req, res, next
 	let recipeId = req.params.id;
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
-		let dbo = db.db("mydb");
+		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("favourites").findOne({username: username, recipeId: recipeId}, function(err, result) {
 			if (err) return res.status(500).end("internal server error");
 			console.log(result);
@@ -254,7 +254,7 @@ app.get('/api/favourite/:id/', isAuthenticated, checkId, function(req, res, next
 app.get('/api/favourites/', isAuthenticated, function(req, res, next){
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
-		let dbo = db.db("mydb");
+		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("favourites").find({username: req.username},  {sort: {_id: -1}, limit: 5}).toArray(function(err, result){
 		//dbo.collection("comments").find({recipeId: parseInt(req.params.recipeId)}).toArray(function(err, result){
 			if (err) return res.status(500).end("internal server error");
@@ -273,7 +273,7 @@ app.post('/api/comments/', isAuthenticated, sanitizeContent, function (req, res,
     let content = req.body.content;
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
-		let dbo = db.db("mydb");
+		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("comments").insertOne({username: req.username, recipeId: recipeId, content: content, date: new Date()}, function(err, result) {
 			if (err) return res.status(500).end("internal server error");
 			console.log(result);
@@ -288,7 +288,7 @@ app.post('/api/comments/', isAuthenticated, sanitizeContent, function (req, res,
 app.delete('/api/comments/:id/', isAuthenticated, checkId, function (req, res, next) {
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
-		let dbo = db.db("mydb");
+		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("comments").findOne({_id: new mongo.ObjectId(req.params.id)}, function(err, result) {
 			if (err) return res.status(500).end("internal server error");
 			if(!result) return res.status(404).end('comment not found');
@@ -312,7 +312,7 @@ app.delete('/api/comments/:id/', isAuthenticated, checkId, function (req, res, n
 app.get('/api/comments/:id/', checkId, function(req, res, next){
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
-		let dbo = db.db("mydb");
+		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("comments").find({recipeId: req.params.id},  {sort: {date: -1}, limit: 10}).toArray(function(err, result){
 		//dbo.collection("comments").find({recipeId: req.params.id} ).toArray(function(err, result){
 			if (err) return res.status(500).end("internal server error");
@@ -332,7 +332,7 @@ app.get('/api/toprecipes/', isAuthenticated, function(req, res, next){
 
 		MongoClient.connect(url, function(err, db) {
 				if (err) throw err;
-				let dbo = db.db("mydb");
+				let dbo = db.db("heroku_xd79spf1");
 				dbo.collection("avgrating").find({},  {sort: {avgRate: -1}, limit: 5}).toArray(function(err, result){
 				//dbo.collection("comments").find({recipeId: parseInt(req.params.recipeId)}).toArray(function(err, result){
 					if (err) return res.status(500).end("internal server error");
@@ -351,7 +351,7 @@ app.get('/api/toprating/:recipeId/', isAuthenticated, function(req, res, next){
 
 		MongoClient.connect(url, function(err, db) {
 			if (err) throw err;
-			let dbo = db.db("mydb");
+			let dbo = db.db("heroku_xd79spf1");
 			dbo.collection("favourites").findOne({username: username, recipeId: recipeId}, function(err, result) {
 				if (err) return res.status(500).end("internal server error");
 				console.log(result);
@@ -376,7 +376,7 @@ app.post('/api/rating/:username/:recipeId/:rating/', isAuthenticated, function (
 		MongoClient.connect(url, function(err, db) {
 			if (err) throw err;
 			console.log('EHERE');
-			let dbo = db.db("mydb");
+			let dbo = db.db("heroku_xd79spf1");
 			//db.rating.update({"username" : "yaaliny", "recipeId" : "74172"}, {"username" : "yaaliny", "recipeId" : "74172" , "rating": "2"} , { upsert: true });
 			dbo.collection("rating").update({username: username, recipeId: recipeId } , {username: username, recipeId: recipeId, rating: parseInt(rating), title:title, readyInMinutes: readyInMinutes, servings: servings}, { upsert: true }  , function(err, result) {
 				if (err) return res.status(500).end("internal server error");
@@ -410,7 +410,7 @@ app.get('/api/rating/:username/:recipeId/', isAuthenticated, function (req, res,
 		MongoClient.connect(url, function(err, db) {
 			if (err) throw err;
 			console.log('EHERE');
-			let dbo = db.db("mydb");
+			let dbo = db.db("heroku_xd79spf1");
 			dbo.collection("rating").findOne({username: username, recipeId: recipeId }, function(err, result) {
 				if (err) return res.status(500).end("internal server error");
 				console.log(result);
@@ -437,7 +437,7 @@ app.get('/api/rating/:recipeId/', function (req, res, next) {
 		MongoClient.connect(url, function(err, db) {
 			if (err) throw err;
 			console.log('EHERE');
-			let dbo = db.db("mydb");
+			let dbo = db.db("heroku_xd79spf1");
 			
 			//dbo.collection("rating").aggregate([ {$group: { _id: "$recipeId", avgRate: { $avg: "$rating" } } }, { $match: { "_id": recipeId } }], function(err, result) {
 				dbo.collection("avgrating").findOne({_id: recipeId}, function(err, result) {
