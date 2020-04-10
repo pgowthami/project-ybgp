@@ -48,7 +48,8 @@ var checkUsername = function(req, res, next) {
 };
 
 var sanitizeContent = function(req, res, next) {
-    req.body.content = validator.escape(req.body.content);
+    //req.body.content = validator.escape(req.body.content);
+    req.body.content = validator.matches(/^[a-z0-9 ]+$/i);
     next();
 }
 
