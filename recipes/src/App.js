@@ -22,11 +22,9 @@ class App extends Component {
 			userFavourites: [],
 			userSuggestions: [],
 			showSearchResults: false,
-			changePassword: false,
-			pageRefreshed: false
+			changePassword: false
 		};
 		this.baseUrl = 'https://spoonacular.com/recipeImages/';
-
 	};
 
 	componentDidMount = () => {
@@ -51,42 +49,25 @@ class App extends Component {
 
 		// if user clicks on 'Homepage' button
 		if (this.props.location.state && this.props.location.state.showUserHomepage) {
-
-			console.log('HERE1');
-			// TODO: set values here instead of storing in local storage
 			this.setState({ showUserHomepage: true });
-			this.setState({ username: this.props.location.state.username });
-			this.setState({ loggedIn: this.props.location.state.loggedIn });
 			this.displayHomepage();
 		}
-		/*
-		// NEW: if user clicks on 'Search Results' button
-		if (this.props.location.state && this.props.location.state.showSearchResults) {
-			console.log('HERE2');
-			// TODO: set values here instead of storing in local storage
-			this.setState({ showUserHomepage: false });
-			this.setState({ showSearchResults: true });
-			this.setState({ username: this.props.location.state.username });
-			this.setState({ loggedIn: this.props.location.state.loggedIn });
-			this.setState({ showLoginPage: this.props.location.state.showLoginPage });
-		}
-		*/
+
 		// update state variables with values from local storage
 		let searchResults = JSON.parse(localStorage.getItem('recipes'));
+
 		this.setState({ recipes: searchResults });
-		this.setState({ username: this.state.username });
 		this.setState({ username: JSON.parse(localStorage.getItem('username')) });
 		this.setState({ loggedIn: JSON.parse(localStorage.getItem('loggedIn')) });
 		this.setState({ showLoginPage: JSON.parse(localStorage.getItem('showLoginPage')) });
 		this.setState({ userFavourites: JSON.parse(localStorage.getItem('userFavourites')) });
 		this.setState({ userSuggestions: JSON.parse(localStorage.getItem('userSuggestions')) });
-		
+
 		console.log(this.state);
 		this.forceUpdate();
 	}
 
 	componentDidUpdate = () => {
-		console.log('JKSDHGJKHG');
 		localStorage.setItem("recipes", JSON.stringify(this.state.recipes));
 		localStorage.setItem('username', JSON.stringify(this.state.username));
 		localStorage.setItem('loggedIn', JSON.stringify(this.state.loggedIn));
@@ -142,7 +123,7 @@ class App extends Component {
 				window.alert('No results found. Please use another ingredient');
 			}
 			this.setState({ recipes: (JSON.parse(data)).results });
-			
+
 		});
 	};
 
@@ -166,8 +147,6 @@ class App extends Component {
 				this.setState({ userSuggestions: [] });
 				// clear local storage
 				localStorage.clear();
-				
-
 				this.forceUpdate();
 			} else {
 				window.alert('An error occured. Please try again.')
@@ -178,7 +157,7 @@ class App extends Component {
 	createAccount = () => {
 		this.setState({ showLoginPage: true });
 		this.forceUpdate();
-		
+
 	};
 
 	updateUser = (username) => {
@@ -187,7 +166,7 @@ class App extends Component {
 			this.setState({ username: username });
 			this.setState({ userFavourites: [] });
 			this.setState({ showUserHomepage: true });
-			this.displayHomepage();			
+			this.displayHomepage();
 		}
 		else {
 			this.setState({ loggedIn: false });
@@ -248,7 +227,7 @@ class App extends Component {
 		this.getUserFavourites();
 		this.getUserSuggestions();
 		this.forceUpdate();
-		
+
 	}
 
 	updatePassword = () => {
@@ -270,14 +249,14 @@ class App extends Component {
 					}
 					{this.state.loggedIn && <button id='signout-button' className='account-button' onClick={this.signOut}>Sign out</button>}
 				</header>
-				
+
 
 				{this.state.changePassword && <UserAccount username={this.state.username} updateUser={this.updateUser} history={this.props.history} />}
 
 				{this.state.loggedIn && !this.state.showUserHomepage && !this.state.changePassword &&
 					<button id='btn-home' className='btn' onClick={this.displayHomepage}>Homepage</button>
 				}
-				
+
 				<div className="second-header">
 					{this.state.showLoginPage && <LoginPage updateUser={this.updateUser} history={this.props.history} />}
 					{!this.state.showLoginPage && !this.state.changePassword && <SearchForm recipes={this.getAllRecipes} />}
@@ -294,7 +273,7 @@ class App extends Component {
 							loggedIn={this.state.loggedIn}
 							username={this.state.username}
 							history={JSON.stringify(this.props.history)}
-							showBackButton={true}/>
+							showBackButton={true} />
 					})}
 				</div>
 				}
@@ -304,7 +283,7 @@ class App extends Component {
 						loggedIn={this.state.loggedIn} username={this.state.username} history={this.props.history}
 						userSuggestions={this.state.userSuggestions}
 					/>}
-				
+
 			</div>
 		);
 	};
