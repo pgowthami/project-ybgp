@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 
 const cookie = require('cookie');
 
-app.use(express.static('static'));
+app.use(express.static(__dirname + '/recipes'));
 
 const session = require('express-session');
 app.use(session({
@@ -63,7 +63,7 @@ var checkIngredients = function(req, res, next) {
 app.get('/', function(req, res, next) {  
           res.status(200).send("Hi, It works!")  
  });
-   
+
 app.post('/signup/', checkUsername, function (req, res, next) {
 	if (!('username' in req.body)) return res.status(400).end('username is missing');
     if (!('password' in req.body)) return res.status(400).end('password is missing');
