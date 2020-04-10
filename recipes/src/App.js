@@ -56,9 +56,19 @@ class App extends Component {
 			this.displayHomepage();
 		}
 
+		// if user clicks on 'Search Results' button
+		if (this.props.location.state && this.props.location.state.showSearchResults) {
+			// TODO: set values here instead of storing in local storage
+			this.setState({ showUserHomepage: true });
+			this.setState({ username: this.props.location.state.username });
+			this.setState({ loggedIn: this.props.location.state.loggedIn });
+			
+		}
+
 		// update state variables with values from local storage
 		let searchResults = JSON.parse(localStorage.getItem('recipes'));
 		this.setState({ recipes: searchResults });
+		//this.setState({ username: this.state.username });
 		//this.setState({ username: JSON.parse(localStorage.getItem('username')) });
 		//this.setState({ loggedIn: JSON.parse(localStorage.getItem('loggedIn')) });
 		//this.setState({ showLoginPage: JSON.parse(localStorage.getItem('showLoginPage')) });
@@ -71,7 +81,7 @@ class App extends Component {
 
 	componentDidUpdate = () => {
 		console.log('JKSDHGJKHG');
-		//localStorage.setItem("recipes", JSON.stringify(this.state.recipes));
+		localStorage.setItem("recipes", JSON.stringify(this.state.recipes));
 		//localStorage.setItem('username', JSON.stringify(this.state.username));
 		//localStorage.setItem('loggedIn', JSON.stringify(this.state.loggedIn));
 		//localStorage.setItem('showLoginPage', JSON.stringify(this.state.showLoginPage));
