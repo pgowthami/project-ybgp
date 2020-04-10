@@ -49,6 +49,7 @@ class App extends Component {
 
 		// if user clicks on 'Homepage' button
 		if (this.props.location.state && this.props.location.state.showUserHomepage) {
+
 			console.log('HERE1');
 			// TODO: set values here instead of storing in local storage
 			this.setState({ showUserHomepage: true });
@@ -167,6 +168,7 @@ class App extends Component {
 				this.state.loggedIn = false;
 				this.state.recipes = [];
 				this.showUserHomepage = false;
+				this.props.location.state = null;
 
 				this.forceUpdate();
 			} else {
