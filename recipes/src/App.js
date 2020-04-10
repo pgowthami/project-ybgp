@@ -59,10 +59,11 @@ class App extends Component {
 		// if user clicks on 'Search Results' button
 		if (this.props.location.state && this.props.location.state.showSearchResults) {
 			// TODO: set values here instead of storing in local storage
-			this.setState({ showUserHomepage: true });
+			this.setState({ showUserHomepage: false });
+			this.setState({ showSearchResults: true });
 			this.setState({ username: this.props.location.state.username });
 			this.setState({ loggedIn: this.props.location.state.loggedIn });
-			
+			this.setState({ showLoginPage: this.props.location.state.showLoginPage });
 		}
 
 		// update state variables with values from local storage
@@ -160,6 +161,11 @@ class App extends Component {
 				this.setState({ userSuggestions: [] });
 				// clear local storage
 				localStorage.clear();
+				this.state.username = '';
+				this.state.loggedIn = false;
+				this.state.recipes = [];
+				this.showUserHomepage = false;
+
 				this.forceUpdate();
 			} else {
 				window.alert('An error occured. Please try again.')
