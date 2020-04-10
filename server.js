@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 
 const cookie = require('cookie');
 
-app.use(express.static(__dirname + '/recipes'));
+app.use(express.static(__dirname + '/recipes/src/'));
 
 const session = require('express-session');
 app.use(session({
