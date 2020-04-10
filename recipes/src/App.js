@@ -49,6 +49,7 @@ class App extends Component {
 
 		// if user clicks on 'Homepage' button
 		if (this.props.location.state && this.props.location.state.showUserHomepage) {
+			console.log('HERE1');
 			// TODO: set values here instead of storing in local storage
 			this.setState({ showUserHomepage: true });
 			this.setState({ username: this.props.location.state.username });
@@ -58,6 +59,7 @@ class App extends Component {
 
 		// if user clicks on 'Search Results' button
 		if (this.props.location.state && this.props.location.state.showSearchResults) {
+			console.log('HERE2');
 			// TODO: set values here instead of storing in local storage
 			this.setState({ showUserHomepage: false });
 			this.setState({ showSearchResults: true });
