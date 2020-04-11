@@ -203,6 +203,7 @@ class App extends Component {
 			document.getElementById('favourite-message').innerHTML = '';
 			//this.setState({ userFavourites: data });
 			this.state.userFavourites = data;
+			this.forceUpdate();
 		});
 	}
 
