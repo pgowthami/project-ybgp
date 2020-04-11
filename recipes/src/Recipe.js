@@ -23,8 +23,9 @@ class Recipe extends Component {
 	componentDidMount = () => {
 		this.recipeId = this.props.location.state.recipeId;
 		
-		this.setState({loggedIn: this.props.location.state.loggedIn});
+		//this.setState({loggedIn: this.props.location.state.loggedIn});
 		//this.setState({ username: this.props.location.state.username});
+		this.state.loggedIn = this.props.location.state.loggedIn;
 		this.state.username = this.props.location.state.username;
 		this.getIngredients();
 		this.getInstructions();
@@ -370,6 +371,7 @@ class Recipe extends Component {
 										showLoginPage: this.state.showLoginPage,
 										showUserHomepage: false,
 										showSearchResults: true
+										
 									}
 								}}>Search Results</Link>
 							</button>
@@ -383,6 +385,7 @@ class Recipe extends Component {
 											loggedIn: this.state.loggedIn,
 											showLoginPage: this.state.showLoginPage,
 											showUserHomepage: true
+											
 										}
 									}}>Homepage</Link>
 								</button>
