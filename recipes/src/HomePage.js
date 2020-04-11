@@ -22,7 +22,7 @@ const HomePage = props => {
 				})}
 			</div>
 			<div id='user-suggestions'>
-				<div className='homepage-headings'><h2>Try these! </h2></div>
+				<div className='homepage-headings'>Try these!</div>
 				{props.userSuggestions.map((recipe) => {
 					return <RecipeBox key={recipe.recipeId}
 						id={recipe.recipeId}
@@ -35,7 +35,6 @@ const HomePage = props => {
 						history={JSON.stringify(props.history)}
 						showBackButton={false} />
 				})}
-
 			</div>
 		</div>
 	);

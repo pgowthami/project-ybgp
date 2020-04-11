@@ -27,6 +27,7 @@
     word-wrap: break-word;
     width:312px;
     height:70px;
+    font-weight: bold;
 }
 
 #recipe-image{
@@ -34,6 +35,10 @@
     height:231px;
 }
 
-.button-viewRecipe{
+#recipe-cookingTime{
+    font-weight: bold;
+}
 
+#recipe-servings{
+    font-weight:bold;
 }

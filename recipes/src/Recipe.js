@@ -153,6 +153,7 @@ class Recipe extends Component {
 		});
 	}
 
+
 	addComment = () => {
 		let comment = document.getElementById('user-comment').value;
 		console.log(comment);
@@ -189,6 +190,7 @@ class Recipe extends Component {
 			});
 		}
 	}
+
 
 	deleteComment = (id) => {
 		const deleteComment = fetch('/api/comments/'+id+'/', {
@@ -246,6 +248,7 @@ class Recipe extends Component {
 			return;
 		});
 	}
+
 
 	getComments = () => {
 		const fetchComments = fetch('/api/comments/' +  this.recipeId + '/', {

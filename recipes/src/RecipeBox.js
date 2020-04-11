@@ -7,7 +7,7 @@ const RecipeBox = props => {
 	return <div key={props.id} className="recipeBoxContainer">
 		<div id="recipe-title">{props.title}</div>
 		<img id="recipe-image" src={props.image} alt={props.title} />
-		<div id="recipe-cookingTime">Cooking time: {props.cookingTime}</div>
+		<div id="recipe-cookingTime">Cooking time: {props.cookingTime} mins</div>
 		<div id="recipe-servings">Servings: {props.servings}</div>
 		<button className="button-viewRecipe">
 			<Link name="link-viewRecipe" style={{ textDecoration: 'none', color: 'black'}} to={{
