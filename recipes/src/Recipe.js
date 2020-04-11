@@ -104,8 +104,13 @@ class Recipe extends Component {
 
 
 	handleFavourite = () => {
+		console.log(this.myRef);
+		console.log(this.myRef.current);
+		console.log(this.myRef.current.value);
+		console.log(this.myRef.value);
 		// if recipe has been favourited, call remove function
 		if (this.myRef.value === 'Favourited!') {
+			console.log('in here');
 			this.removeFavourite();
 		} else {
 
@@ -238,7 +243,7 @@ class Recipe extends Component {
 			//let buttonfvt = document.getElementById('btn-favourite');
 			console.log(this.myRef);
 			if (data) {
-				this.myRef.value = 'Favourited!';
+				this.myRef.current.value = 'Favourited!';
 			} else {
 				this.myRef.value = 'Favourite';
 			}
@@ -409,8 +414,8 @@ class Recipe extends Component {
 							<div id='recipes-title'>{this.props.location.state.title}</div>
 							{this.state.loggedIn &&
 								<div>
-								<text ref={this.myRef}> </text>
-									<button id='btn-favourite' className='btn' onClick={this.handleFavourite}>Favourite</button>
+									<text ref={this.myRef}></text>
+									<button id='btn-favourite' className='btn' onClick={this.handleFavourite}></button>
 								</div>
 								}
 						</div>
