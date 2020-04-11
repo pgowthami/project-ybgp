@@ -244,11 +244,11 @@ class Recipe extends Component {
 			//let buttonfvt = document.getElementById('btn-favourite');
 			console.log(this.myRef);
 			if (data) {
-				this.state.favouriteValue = 'Favourited!;
-				this.myRef.current.value = 'Favourited!';
+				this.state.favouriteValue = 'Favourited!';
+				//this.myRef.current.value = 'Favourited!';
 			} else {
-				this.state.favouriteValue = 'Favourite;
-				this.myRef.value = 'Favourite';
+				this.state.favouriteValue = 'Favourite';
+				//this.myRef.value = 'Favourite';
 			}
 			return;
 		});
@@ -416,10 +416,9 @@ class Recipe extends Component {
 						<div id='recipe-header'>
 							<div id='recipes-title'>{this.props.location.state.title}</div>
 							{this.state.loggedIn &&
-								<div>
-									<text ref={this.myRef}></text>
-								<button id='btn-favourite' className='btn' onClick={this.handleFavourite}>{this.state.favouriteValue}</button>
-								</div>
+								
+								<button id='btn-favourite' className='btn' onClick={this.handleFavourite}>${this.state.favouriteValue}</button>
+								
 								}
 						</div>
 					</div>
