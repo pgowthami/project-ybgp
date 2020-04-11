@@ -38,7 +38,6 @@ class Recipe extends Component {
 			this.getRatings();
 		}
 		this.getAverageRating();
-		this.forceUpdate();
 	};
 
 	compoundDidUpdate = () => {
@@ -110,7 +109,6 @@ class Recipe extends Component {
 			// add to favourites
 			this.favouriteRecipe();
 		}
-		this.forceUpdate();
 	}
 
 	favouriteRecipe = () => {
@@ -128,6 +126,7 @@ class Recipe extends Component {
 			if (response.status === 200) {
 				//document.getElementById('btn-favourite').innerHTML = 'Favourited!';
 				this.state.favouriteValue = 'Favourited!';
+				this.forceUpdate();
 			} else if (response.status === 400) {
 				window.alert('Bad input. Please enter a valid username and recipe id');
 			}else {
@@ -146,13 +145,14 @@ class Recipe extends Component {
 		removeFav.then(response => {
 			if (response.status === 200) {
 				this.state.favouriteValue = 'Favourite';
+				this.forceUpdate();
 			} else if (response.status === 400) {
 				window.alert('Bad input. Please enter a valid username and recipe id');
 			}else {
 				window.alert('An error occured');
 			}
 		});
-		this.forceUpdate();
+		
 	}
 
 	addComment = () => {
@@ -242,6 +242,7 @@ class Recipe extends Component {
 				this.state.favouriteValue = 'Favourite';
 				//this.myRef.value = 'Favourite';
 			}
+			this.forceUpdate();
 			return;
 		});
 	}
