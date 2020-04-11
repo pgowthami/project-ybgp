@@ -8,11 +8,6 @@ import './Recipe.css';
 
 
 class Recipe extends Component {
-	constructor(props) {
-		super(props);
-		this.myRef = React.createRef();
-		console.log(this.myRef);
-	}
 	recipeId= '';
 	state = {
 		instructions: [],
@@ -150,13 +145,14 @@ class Recipe extends Component {
 		});
 		removeFav.then(response => {
 			if (response.status === 200) {
-				this.myRef.value = 'Favourite';
+				this.state.favouriteValue = 'Favourite';
 			} else if (response.status === 400) {
 				window.alert('Bad input. Please enter a valid username and recipe id');
 			}else {
 				window.alert('An error occured');
 			}
 		});
+		this.forceUpdate();
 	}
 
 	addComment = () => {
@@ -239,7 +235,6 @@ class Recipe extends Component {
 				return;
 			}
 			//let buttonfvt = document.getElementById('btn-favourite');
-			console.log(this.myRef);
 			if (data) {
 				this.state.favouriteValue = 'Favourited!';
 				//this.myRef.current.value = 'Favourited!';
