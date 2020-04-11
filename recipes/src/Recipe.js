@@ -21,6 +21,7 @@ class Recipe extends Component {
 	};
 
 	componentDidMount = () => {
+		console.log(document.getElementById('btn-favourite'));
 		this.recipeId = this.props.location.state.recipeId;
 		
 		//this.setState({loggedIn: this.props.location.state.loggedIn});
@@ -224,6 +225,7 @@ class Recipe extends Component {
 				return;
 			}
 			if (data) {
+				console.log(document.getElementById('btn-favourite'));
 				document.getElementById('btn-favourite').innerHTML = 'Favourited!';
 			} else {
 				document.getElementById('btn-favourite').innerHTML = 'Favourite';
