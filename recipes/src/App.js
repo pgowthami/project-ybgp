@@ -145,6 +145,9 @@ class App extends Component {
 				this.setState({ showUserHomepage: false });
 				this.setState({ userFavourites: [] });
 				this.setState({ userSuggestions: [] });
+
+				// clear props
+				console.log(this.props.location.state);
 				// clear local storage
 				localStorage.clear();
 				this.forceUpdate();

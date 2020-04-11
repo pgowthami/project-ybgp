@@ -22,7 +22,7 @@ const HomePage = props => {
 				})}
 			</div>
 			<div id='user-suggestions'>
-				<div className='homepage-headings'>Try these!</div>
+				<div className='homepage-headings'>Try these top-rated recipes!</div>
 				{props.userSuggestions.map((recipe) => {
 					return <RecipeBox key={recipe.recipeId}
 						id={recipe.recipeId}

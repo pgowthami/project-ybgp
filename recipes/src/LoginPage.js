@@ -22,7 +22,7 @@ class LoginPage extends Component {
 				headers: {
 					"Content-Type": "application/json"
 				},
-				credentials: "same-origin"
+				//credentials: "same-origin"
 			});
 			signUp.then(response => {
 				if (response.status === 200) {
