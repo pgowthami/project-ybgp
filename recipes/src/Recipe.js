@@ -8,6 +8,10 @@ import './Recipe.css';
 
 
 class Recipe extends Component {
+	constructor(props) {
+		super(props);
+		this.myRef = React.createRef();
+	}
 	recipeId= '';
 	state = {
 		instructions: [],
@@ -230,15 +234,17 @@ class Recipe extends Component {
 			if (data === null) {
 				return;
 			}
-			let buttonfvt = document.getElementById('btn-favourite');
+			//let buttonfvt = document.getElementById('btn-favourite');
 			if (data) {
-				if (buttonfvt) {
-					buttonfvt.innerHTML = 'Favourited!';
-				}
+				this.myRef.current.value = 'Favourited!';
+				//if (buttonfvt) {
+				//	buttonfvt.innerHTML = 'Favourited!';
+				//}
 			} else {
-				if (buttonfvt) {
-					buttonfvt.innerHTML = 'Favourite';
-				}
+				this.myRef.current.value = 'Favourite';
+				//if (buttonfvt) {
+				//	buttonfvt.innerHTML = 'Favourite';
+				//}
 			}
 			return;
 		});
@@ -405,7 +411,7 @@ class Recipe extends Component {
 						</div>
 						<div id='recipe-header'>
 							<div id='recipes-title'>{this.props.location.state.title}</div>
-							{this.state.loggedIn && <button id='btn-favourite' className='btn' onClick={this.handleFavourite} > Favourite</button>}
+							{this.state.loggedIn && <button id='btn-favourite' className='btn' ref={this.myRef} onClick={this.handleFavourite} > Favourite</button>}
 						</div>
 					</div>
 					<div className='recipe-allparts'>
