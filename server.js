@@ -62,32 +62,37 @@ var checkIngredients = function(req, res, next) {
     next();
 };
 
+let apiKey='297a7f6501274f299115f7183feabad9';
+//let apiKey = 'b5f04b0b394e4a6eb1d3d0157c4abaa1';
+//let apiKey = '3bd6b3501a044f70b65971f869776dfb';
+//let apiKey = 'ee29c579c7af4db59e00ba30158a11a9';
 
 app.post('/signup/', checkUsername, function (req, res, next) {
-	if (!('username' in req.body)) return res.status(400).end('username is missing');
-    if (!('password' in req.body)) return res.status(400).end('password is missing');
+	if (!('username' in req.body)) return res.status(401).end('username is missing');
+    if (!('password' in req.body)) return res.status(401).end('password is missing');
+    if(req.body.password === '') return res.status(401).end('password is missing');
     var username = req.body.username;
     var password = req.body.password;
 	bcrypt.genSalt(10, function(err, salt) {
     	bcrypt.hash(password, salt, function(err, hash) {
 			MongoClient.connect(url, function(err, db) {
-				  if (err) throw err;
-				  var dbo = db.db("heroku_xd79spf1");
-				  dbo.collection("users").find({ _id: username}).toArray(function(err, user) {
-				      if (err) throw err;				   
-					  if (user.length > 0) return res.status(409).end("username " + username + " already exists");
-					  dbo.collection("users").insertOne({_id: username, hash}, function(err, result) {
-					  	if (err) return res.status(500).end("internal server error");
-		            	res.setHeader('Set-Cookie', cookie.serialize('username', username, {
-		                  	path : '/', 
-		                  	maxAge: 60 * 60 * 24 * 7
-		            	}));
-					 	req.session.username = username; 
-		            	return res.json("user " + username + " signed up");
-				    	db.close();
-					  	});          
-				  	});
+			    if (err) throw err;
+			    var dbo = db.db("heroku_xd79spf1");
+			    dbo.collection("users").find({ _id: username}).toArray(function(err, user) {
+			    	if (err) throw err;				   
+					if (user.length > 0) return res.status(409).end("username already exists");
+				    dbo.collection("users").insertOne({_id: username, hash}, function(err, result) {
+				  	if (err) return res.status(500).end("internal server error");
+	            	res.setHeader('Set-Cookie', cookie.serialize('username', username, {
+	                  	path : '/', 
+	                  	maxAge: 60 * 60 * 24 * 7
+	            	}));
+				 	req.session.username = username; 
+	            	return res.json("user signed up and signed in");
+			    	db.close();
+				  	});          
 				});
+			});
 		});
 	});
 });
@@ -161,10 +166,7 @@ app.post('/signout/', function (req, res, next) {
     return res.end("user has been signed out");   
 });
 
-let apiKey='297a7f6501274f299115f7183feabad9';
-//let apiKey = 'b5f04b0b394e4a6eb1d3d0157c4abaa1';
-//let apiKey = '3bd6b3501a044f70b65971f869776dfb';
-//let apiKey = 'ee29c579c7af4db59e00ba30158a11a9';
+
 app.post('/api/recipes/', checkIngredients, function (req, res, next) {
  	Request.get("https://api.spoonacular.com/recipes/search?apiKey="+apiKey+"&query=" + req.body.ingredients, (error, response, body) => {
 	    if(error) {
@@ -369,8 +371,7 @@ app.post('/api/rating/:username/:id/:rating/', isAuthenticated, checkId, functio
 
 
 app.get('/api/rating/:username/:id/', isAuthenticated, checkId, function (req, res, next) {
-    let recipeId = req.params.recipeId;
-
+    let recipeId = req.params.id;
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
 		let dbo = db.db("heroku_xd79spf1");
@@ -381,7 +382,6 @@ app.get('/api/rating/:username/:id/', isAuthenticated, checkId, function (req, r
 			} else {
 				return res.json(0);
 			}
-			
 			db.close();
 		});
 	});
