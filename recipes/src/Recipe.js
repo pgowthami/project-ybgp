@@ -236,12 +236,12 @@ class Recipe extends Component {
 			}
 			//let buttonfvt = document.getElementById('btn-favourite');
 			if (data) {
-				this.myRef.current.value = 'Favourited!';
+				this.myRef.value = 'Favourited!';
 				//if (buttonfvt) {
 				//	buttonfvt.innerHTML = 'Favourited!';
 				//}
 			} else {
-				this.myRef.current.value = 'Favourite';
+				this.myRef.value = 'Favourite';
 				//if (buttonfvt) {
 				//	buttonfvt.innerHTML = 'Favourite';
 				//}
