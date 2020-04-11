@@ -32,11 +32,16 @@ class Recipe extends Component {
 		this.getInstructions();
 		this.getComments();
 		if (this.props.location.state.loggedIn) {
+			console.log('HERE');
 			this.getFavourite();
 			this.getRatings();
 		}
 		this.getAverageRating();
-    };
+	};
+
+	compoundDidUpdate = () => {
+		console.log('here');
+	}
 
 	getIngredients = () => {
 		const fetchIngredients = fetch('/api/ingredients/' + this.recipeId + '/', {
@@ -208,6 +213,7 @@ class Recipe extends Component {
 
 	// check if recipe has been favourited and display button appropriately
 	getFavourite = () => {
+		console.log('HEREEEEEEEEEEEE');
 		const fetchFavourite = fetch('/api/favourite/' + this.recipeId + '/', {
 			method: "GET",
 			headers: {
