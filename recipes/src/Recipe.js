@@ -43,6 +43,7 @@ class Recipe extends Component {
 			this.getRatings();
 		}
 		this.getAverageRating();
+		this.forceUpdate();
 	};
 
 	compoundDidUpdate = () => {
@@ -417,7 +418,7 @@ class Recipe extends Component {
 							<div id='recipes-title'>{this.props.location.state.title}</div>
 							{this.state.loggedIn &&
 								
-								<button id='btn-favourite' className='btn' onClick={this.handleFavourite}>${this.state.favouriteValue}</button>
+								<button id='btn-favourite' className='btn' onClick={this.handleFavourite}>{this.state.favouriteValue}</button>
 								
 								}
 						</div>
