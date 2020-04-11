@@ -11,6 +11,7 @@ class Recipe extends Component {
 	constructor(props) {
 		super(props);
 		this.myRef = React.createRef();
+		console.log(this.myRef);
 	}
 	recipeId= '';
 	state = {
@@ -237,6 +238,8 @@ class Recipe extends Component {
 			//let buttonfvt = document.getElementById('btn-favourite');
 			if (data) {
 				this.myRef.value = 'Favourited!';
+				console.log(this.myRef.value);
+
 				//if (buttonfvt) {
 				//	buttonfvt.innerHTML = 'Favourited!';
 				//}
@@ -411,7 +414,7 @@ class Recipe extends Component {
 						</div>
 						<div id='recipe-header'>
 							<div id='recipes-title'>{this.props.location.state.title}</div>
-							{this.state.loggedIn && <button id='btn-favourite' className='btn' ref={this.myRef} onClick={this.handleFavourite} > Favourite</button>}
+							{this.state.loggedIn && <button id='btn-favourite' className='btn' ref={this.myRef} onClick={this.handleFavourite} ></button>}
 						</div>
 					</div>
 					<div className='recipe-allparts'>
