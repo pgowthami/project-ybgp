@@ -27,12 +27,12 @@ app.use(session({
     secret: 'my secret',
     resave: false,
     saveUninitialized: true,
-    cookie: {httpOnly: true, sameSite: true}
+    //cookie: {httpOnly: true, sameSite: true}
 }));
 
 app.use(function (req, res, next){
-    //req.username = req.session.username;
     let username = (req.session.username)? req.session.username : '';
+    req.username = username;
     res.setHeader('Set-Cookie', cookie.serialize('username', username, {
           path : '/',
           secure: true,
@@ -43,7 +43,6 @@ app.use(function (req, res, next){
     //console.log("HTTP request", req.method, req.url, req.body);
     //next();
 });
-
 
 var isAuthenticated = function(req, res, next) {
     if (!req.username) return res.status(401).end("access denied");
