@@ -18,7 +18,7 @@ class Recipe extends Component {
 		showUserHomepage: false,
 		ratings: { value: 0 },
 		averagerating: '0',
-		favouriteValue: ''
+		favouriteValue: 'Favourite'
 	};
 
 	componentDidMount = () => {
