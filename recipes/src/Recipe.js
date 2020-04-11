@@ -181,12 +181,12 @@ class Recipe extends Component {
 				}
 				let newComment = (data.ops)[0];
 				//this.setState({ commentsList: [...this.state.commentsList, newComment] });
-				console.log(this.state.commentsList);
-				this.state.commentsList.unshift(newComment);
+				//console.log(this.state.commentsList);
+				//this.state.commentsList.unshift(newComment);
 				//this.state.commentsList.splice(0, 0, newComment);
-				console.log(this.state.commentsList);
+				//console.log(this.state.commentsList);
 				this.getComments();
-				this.forceUpdate();
+				//this.forceUpdate();
 			});
 		}
 	}
@@ -271,7 +271,9 @@ class Recipe extends Component {
 				return;
 			}
 			//this.setState({ commentsList: data });
+			console.log(data);
 			this.state.commentsList = data;
+			console.log(this.state.commentsList);
 			this.forceUpdate();
 		});
 	}
@@ -425,7 +427,6 @@ class Recipe extends Component {
 						<div id='cooking-time'>Cooking time: {this.props.location.state.cookingTime} mins</div>
 						<div id='servings'>Servings: {this.props.location.state.servings}</div>
 						<div id='averagerate'>Average Rating: {this.state.averagerating}/5</div>
-						<div id='user-rating'>You rated this recipe: {this.state.ratings.value}/5</div>
 							{this.state.loggedIn &&
 								<div>
 								<div id='add-ratings'>Add your rating:</div>
