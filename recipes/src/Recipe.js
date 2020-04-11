@@ -106,10 +106,6 @@ class Recipe extends Component {
 
 
 	handleFavourite = () => {
-		console.log(this.myRef);
-		console.log(this.myRef.current);
-		console.log(this.myRef.current.value);
-		console.log(this.myRef.value);
 		// if recipe has been favourited, call remove function
 		if (this.state.favouriteValue === 'Favourited!') {
 			console.log('in here');
@@ -119,7 +115,7 @@ class Recipe extends Component {
 			// add to favourites
 			this.favouriteRecipe();
 		}
-		
+		this.forceUpdate();
 	}
 
 	favouriteRecipe = () => {
