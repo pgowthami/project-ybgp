@@ -26,6 +26,7 @@
 
 #averagerate{
     font-size:20px;
+    font-weight: bold;
 }
 
 #add-ratings{
@@ -46,10 +47,12 @@
 
 #cooking-time{
     font-size:20px;
+    font-weight: bold;
 }
 
 #servings{
     font-size:20px;
+    font-weight: bold;
 }
 
 #recipes-title{

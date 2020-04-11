@@ -7,10 +7,10 @@
 }
 .recipeBoxContainer {
     margin:45px;
-    margin-bottom:200px;
+    margin-bottom:100px;
     width:280px;
     height:200px;
-
+    border: 10px solid black;
 }
 
 .button-viewRecipe{
@@ -28,6 +28,7 @@
     width:312px;
     height:70px;
     font-weight: bold;
+    margin-top: 20px;
 }
 
 #recipe-image{
