@@ -230,11 +230,15 @@ class Recipe extends Component {
 			if (data === null) {
 				return;
 			}
+			let buttonfvt = document.getElementById('btn-favourite');
 			if (data) {
-				console.log(document.getElementById('btn-favourite'));
-				document.getElementById('btn-favourite').innerHTML = 'Favourited!';
+				if (buttonfvt) {
+					buttonfvt.innerHTML = 'Favourited!';
+				}
 			} else {
-				document.getElementById('btn-favourite').innerHTML = 'Favourite';
+				if (buttonfvt) {
+					buttonfvt.innerHTML = 'Favourite';
+				}
 			}
 			return;
 		});
