@@ -138,13 +138,13 @@ class App extends Component {
 		signoutPromise.then(response => {
 			console.log('SIGNED OYT')
 			if (response.status === 200) {
-				this.setState({ loggedIn: false });
-				this.setState({ username: '' });
-				this.setState({ showLoginPage: false });
-				this.setState({ recipes: [] });
-				this.setState({ showUserHomepage: false });
-				this.setState({ userFavourites: [] });
-				this.setState({ userSuggestions: [] });
+				this.state.loggedIn = false;
+				this.state.username = '';
+				this.state.showLoginPage = false;
+				this.state.recipes = [];
+				this.state.showUserHomepage = false;
+				this.state.userFavourites = [];
+				this.state.userSuggestions = [];
 
 				// clear props
 				console.log(this.props.location.state);
