@@ -316,8 +316,8 @@ class Recipe extends Component {
 			console.log("TeSTTT");
 			console.log(value);
 			if (value > 0) {
-				this.setState({ ratings: { value } });
-				//this.state.ratings = value;
+				//this.setState({ ratings: { value } });
+				this.state.ratings = value;
 				console.log(this.state.ratings.value);
 				this.forceUpdate();
 				//document.getElementById('starrating').value = value;
@@ -341,8 +341,8 @@ class Recipe extends Component {
 		ratingsRecipe.then(response => {
 			return response.json();
 		}).then(data => {
-			this.setState({ ratings: { value } });
-			//this.state.ratings = value;
+			//this.setState({ ratings: { value } });
+			this.state.ratings = value;
 			this.getAverageRating();
 			this.forceUpdate();
 		});
@@ -425,6 +425,7 @@ class Recipe extends Component {
 						<div id='cooking-time'>Cooking time: {this.props.location.state.cookingTime} mins</div>
 						<div id='servings'>Servings: {this.props.location.state.servings}</div>
 						<div id='averagerate'>Average Rating: {this.state.averagerating}/5</div>
+						<div id='user-rating'>You rated this recipe: {this.state.ratings.value}/5</div>
 							{this.state.loggedIn &&
 								<div>
 								<div id='add-ratings'>Add your rating:</div>
