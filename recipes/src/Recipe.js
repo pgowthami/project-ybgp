@@ -23,6 +23,7 @@ class Recipe extends Component {
 		showUserHomepage: false,
 		ratings: { value: 0 },
 		averagerating: '0',
+		favouriteValue: ''
 	};
 
 	componentDidMount = () => {
@@ -109,7 +110,7 @@ class Recipe extends Component {
 		console.log(this.myRef.current.value);
 		console.log(this.myRef.value);
 		// if recipe has been favourited, call remove function
-		if (this.myRef.value === 'Favourited!') {
+		if (this.state.favouriteValue === 'Favourited!') {
 			console.log('in here');
 			this.removeFavourite();
 		} else {
@@ -134,7 +135,7 @@ class Recipe extends Component {
 		favRecipe.then(response => {
 			if (response.status === 200) {
 				//document.getElementById('btn-favourite').innerHTML = 'Favourited!';
-				this.myRef.value = 'Favourited!';
+				this.state.favouriteValue = 'Favourited!';
 			} else if (response.status === 400) {
 				window.alert('Bad input. Please enter a valid username and recipe id');
 			}else {
@@ -243,8 +244,10 @@ class Recipe extends Component {
 			//let buttonfvt = document.getElementById('btn-favourite');
 			console.log(this.myRef);
 			if (data) {
+				this.state.favouriteValue = 'Favourited!;
 				this.myRef.current.value = 'Favourited!';
 			} else {
+				this.state.favouriteValue = 'Favourite;
 				this.myRef.value = 'Favourite';
 			}
 			return;
@@ -415,7 +418,7 @@ class Recipe extends Component {
 							{this.state.loggedIn &&
 								<div>
 									<text ref={this.myRef}></text>
-									<button id='btn-favourite' className='btn' onClick={this.handleFavourite}></button>
+								<button id='btn-favourite' className='btn' onClick={this.handleFavourite}>{this.state.favouriteValue}</button>
 								</div>
 								}
 						</div>
