@@ -27,22 +27,34 @@ app.use(session({
     secret: 'my secret',
     resave: false,
     saveUninitialized: true,
+    cookie: {httpOnly: true, sameSite: true}
 }));
 
 app.use(function (req, res, next){
-    req.username = req.session.username;
-    console.log("HTTP request", req.method, req.url, req.body);
+    //req.username = req.session.username;
+    let username = (req.session.username)? req.session.username : '';
+    res.setHeader('Set-Cookie', cookie.serialize('username', username, {
+          path : '/',
+          secure: true,
+          sameSite: true,
+          maxAge: 60 * 60 * 24 * 7 // 1 week in number of seconds
+    }));
     next();
+    //console.log("HTTP request", req.method, req.url, req.body);
+    //next();
 });
 
+if (app.get('env') === 'production') {
+    session.cookie.secure = true;
+}
 
 var isAuthenticated = function(req, res, next) {
     if (!req.username) return res.status(401).end("access denied");
     next();
 };
 
-// 3 methods to check input before processing it
 var checkUsername = function(req, res, next) {
+	if (!('username' in req.body)) return res.status(401).end('username is missing in request body');
     if (!validator.isAlphanumeric(req.body.username)) return res.status(400).end("bad input");
     next();
 };
@@ -68,9 +80,9 @@ let apiKey='297a7f6501274f299115f7183feabad9';
 //let apiKey = 'ee29c579c7af4db59e00ba30158a11a9';
 
 app.post('/signup/', checkUsername, function (req, res, next) {
-	if (!('username' in req.body)) return res.status(401).end('username is missing');
-    if (!('password' in req.body)) return res.status(401).end('password is missing');
-    if(req.body.password === '') return res.status(401).end('password is missing');
+	if (!('username' in req.body)) return res.status(401).end('username is missing in request body');
+    if (!('password' in req.body)) return res.status(401).end('password is missing in request body');
+    if(req.body.password === '') return res.status(401).end('password is empty');
     var username = req.body.username;
     var password = req.body.password;
 	bcrypt.genSalt(10, function(err, salt) {
@@ -98,8 +110,9 @@ app.post('/signup/', checkUsername, function (req, res, next) {
 });
 
 app.post('/signin/', checkUsername, function (req, res, next) {
-	if (!('username' in req.body)) return res.status(400).end('username is missing');
-    if (!('password' in req.body)) return res.status(400).end('password is missing');
+	if (!('username' in req.body)) return res.status(400).end('username is missing in request body');
+    if (!('password' in req.body)) return res.status(400).end('password is missing in request body');
+    if(req.body.password === '') return res.status(400).end('password is empty');
     let username = req.body.username;
     let password = req.body.password;
 	MongoClient.connect(url, function(err, db) {
@@ -119,7 +132,7 @@ app.post('/signin/', checkUsername, function (req, res, next) {
 	          		path : '/', 
 	          		maxAge: 60 * 60 * 24 * 7
 	    		}));
-	    		return res.json("user " + username + " signed in");
+	    		return res.json("user signed in");
 			});
 			db.close();
 		});
@@ -128,8 +141,8 @@ app.post('/signin/', checkUsername, function (req, res, next) {
 
 // Change password
 app.post('/changePassword/', isAuthenticated, function (req, res, next) {
-	if (!('password1' in req.body)) return res.status(400).end('password entry #1 is missing');
-    if (!('password2' in req.body)) return res.status(400).end('password entry #2 is missing');
+	if (!('password1' in req.body)) return res.status(401).end('password entry #1 is missing');
+    if (!('password2' in req.body)) return res.status(401).end('password entry #2 is missing');
     let username = req.username;
     let password1 = req.body.password1;
     let password2 = req.body.password2;
@@ -168,7 +181,7 @@ app.post('/signout/', function (req, res, next) {
 
 
 app.post('/api/recipes/', checkIngredients, function (req, res, next) {
- 	Request.get("https://api.spoonacular.com/recipes/search?apiKey="+apiKey+"&query=" + req.body.ingredients, (error, response, body) => {
+ 	Request.get("https://api.spoonacular.com/recipes/search?apiKey="+apiKey+"&query=" + req.body.ingredients+'&number=21', (error, response, body) => {
 	    if(error) {
 	        return console.dir(error);
 	    }
@@ -372,6 +385,7 @@ app.post('/api/rating/:username/:id/:rating/', isAuthenticated, checkId, functio
 
 app.get('/api/rating/:username/:id/', isAuthenticated, checkId, function (req, res, next) {
     let recipeId = req.params.id;
+
 	MongoClient.connect(url, function(err, db) {
 		if (err) throw err;
 		let dbo = db.db("heroku_xd79spf1");
