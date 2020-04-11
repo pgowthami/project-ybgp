@@ -105,7 +105,6 @@ class Recipe extends Component {
 			console.log('in here');
 			this.removeFavourite();
 		} else {
-
 			// add to favourites
 			this.favouriteRecipe();
 		}
@@ -152,7 +151,6 @@ class Recipe extends Component {
 				window.alert('An error occured');
 			}
 		});
-		
 	}
 
 	addComment = () => {
@@ -201,9 +199,10 @@ class Recipe extends Component {
 		});
 		deleteComment.then(response => {
 			if (response.status === 200) {
+				console.log('DELETE COMMENT');
 				this.getComments();
 				this.forceUpdate();
-			} else if (response.status === 200) {
+			} else if (response.status === 400) {
 				window.alert('Bad input. Please enter a valid comment id');
 			} else if (response.status === 401) {
 				window.alert('Unauthorized. Cannot delete this comment.');
@@ -214,6 +213,7 @@ class Recipe extends Component {
 			}
 		});
 	};
+
 
 	// check if recipe has been favourited and display button appropriately
 	getFavourite = () => {
@@ -269,6 +269,7 @@ class Recipe extends Component {
 			}
 			//this.setState({ commentsList: data });
 			this.state.commentsList = data;
+			this.forceUpdate();
 		});
 	}
 
@@ -320,8 +321,8 @@ class Recipe extends Component {
 			}
 			return;
 		});
-
 	};
+
 
 	rateRecipe = (value) => {
 		const ratingsRecipe = fetch('/api/rating/' + this.state.username + '/' + this.recipeId + '/' + value + '/', {
