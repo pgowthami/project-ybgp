@@ -414,7 +414,7 @@ class Recipe extends Component {
 						</div>
 						<div id='recipe-header'>
 							<div id='recipes-title'>{this.props.location.state.title}</div>
-							{this.state.loggedIn && <button id='btn-favourite' className='btn' ref={this.myRef} onClick={this.handleFavourite} ></button>}
+							{this.state.loggedIn && <div id='btn-favourite' className='btn' ref={this.myRef} onClick={this.handleFavourite} ></div>}
 						</div>
 					</div>
 					<div className='recipe-allparts'>
