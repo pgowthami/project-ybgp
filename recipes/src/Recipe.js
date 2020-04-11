@@ -316,8 +316,8 @@ class Recipe extends Component {
 			console.log("TeSTTT");
 			console.log(value);
 			if (value > 0) {
-				//this.setState({ ratings: { value } });
-				this.state.ratings = value;
+				this.setState({ ratings: { value } });
+				//this.state.ratings = value;
 				console.log(this.state.ratings.value);
 				this.forceUpdate();
 				//document.getElementById('starrating').value = value;
@@ -341,8 +341,8 @@ class Recipe extends Component {
 		ratingsRecipe.then(response => {
 			return response.json();
 		}).then(data => {
-			//this.setState({ ratings: { value } });
-			this.state.ratings = value;
+			this.setState({ ratings: { value } });
+			//this.state.ratings = value;
 			this.getAverageRating();
 			this.forceUpdate();
 		});
