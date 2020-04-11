@@ -44,9 +44,6 @@ app.use(function (req, res, next){
     //next();
 });
 
-if (app.get('env') === 'production') {
-    session.cookie.secure = true;
-}
 
 var isAuthenticated = function(req, res, next) {
     if (!req.username) return res.status(401).end("access denied");
