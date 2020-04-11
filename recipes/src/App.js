@@ -148,6 +148,10 @@ class App extends Component {
 
 				// clear props
 				console.log(this.props.location.state);
+				this.props.location.state.username = '';
+				this.props.location.state.loggedIn = 'false';
+				this.props.location.showUserHomepage = 'false';
+				console.log(this.props.location.state);
 				// clear local storage
 				localStorage.clear();
 				this.forceUpdate();
