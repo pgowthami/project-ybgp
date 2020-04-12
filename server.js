@@ -66,7 +66,7 @@ var checkIngredients = function(req, res, next) {
     next();
 };
 
-let apiKey = 'b5f04b0b394e4a6eb1d3d0157c4abaa1';
+let apiKey = '297a7f6501274f299115f7183feabad9';
 
 app.post('/signup/', checkUsername, function (req, res, next) {
 	if (!('username' in req.body)) return res.status(401).end('username is missing in request body');
