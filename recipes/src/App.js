@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from "react-router-dom";
 import './App.css';
 import SearchForm from './SearchForm.js';
 import RecipeBox from './RecipeBox.js';
@@ -64,6 +63,7 @@ class App extends Component {
 		this.forceUpdate();
 	}
 
+
 	componentDidUpdate = () => {
 		localStorage.setItem("recipes", JSON.stringify(this.state.recipes));
 		localStorage.setItem('username', JSON.stringify(this.state.username));
@@ -72,6 +72,7 @@ class App extends Component {
 		localStorage.setItem('userFavourites', JSON.stringify(this.state.userFavourites));
 		localStorage.setItem('userSuggestions', JSON.stringify(this.state.userSuggestions));
 	}
+
 
 	getAllRecipes = (e) => {
 		e.preventDefault();
@@ -108,6 +109,7 @@ class App extends Component {
 		});
 	};
 
+
 	signOut = () => {
 		const signoutPromise = fetch('/signout/', {
 			method: "POST",
@@ -133,11 +135,13 @@ class App extends Component {
 		});
 	};
 
+
 	createAccount = () => {
 		this.setState({ showLoginPage: true });
 		this.forceUpdate();
 
 	};
+
 
 	updateUser = (username) => {
 		if (username !== '') {
@@ -154,12 +158,14 @@ class App extends Component {
 		this.setState({ showLoginPage: false });
 	};
 
+
 	removeUser = () => {
 		localStorage.setItem('username', JSON.stringify(this.state.username));
 		localStorage.setItem('loggedIn', JSON.stringify(this.state.loggedIn));
 		localStorage.setItem('showLoginPage', JSON.stringify(this.state.showLoginPage));
 		localStorage.setItem('recipes', JSON.stringify(this.state.recipes));
 	}
+
 
 	getUserFavourites = () => {
 		const userFavourites = fetch('/api/favourites/', {
@@ -183,6 +189,7 @@ class App extends Component {
 		});
 	}
 
+
 	getUserSuggestions = () => {
 		const userSuggestions = fetch('/api/toprecipes/', {
 			method: "GET",
@@ -198,6 +205,7 @@ class App extends Component {
 
 	}
 
+
 	displayHomepage = () => {
 		this.setState({ showUserHomepage: true });
 		this.setState({ changePassword: false });
@@ -207,10 +215,12 @@ class App extends Component {
 
 	}
 
+
 	updatePassword = () => {
 		this.setState({ changePassword: true });
 		this.forceUpdate();
 	}
+
 
 	render() {
 		return (
@@ -238,7 +248,7 @@ class App extends Component {
 				</div>
 
 				{!this.state.showUserHomepage && !this.state.showLoginPage && this.state.recipes && this.state.recipes.length > 0 &&
-					<div id='search-results-heading'>Your Search Results:</div>} 
+					<h2>'>Your Search Results:</h2>} 
 
 				{!this.state.showUserHomepage && !this.state.showLoginPage &&
 					<div className="allRecipesContainer">

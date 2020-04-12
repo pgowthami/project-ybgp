@@ -8,6 +8,7 @@ class LoginPage extends Component {
 		super(props);
 	};
 
+
 	signup = () => {
 		let username = document.getElementById('username').value;
 		let password = document.getElementById('password').value;
@@ -22,7 +23,6 @@ class LoginPage extends Component {
 				headers: {
 					"Content-Type": "application/json"
 				},
-				//credentials: "same-origin"
 			});
 			signUp.then(response => {
 				if (response.status === 200) {
@@ -39,6 +39,7 @@ class LoginPage extends Component {
 		}
 	};
 
+
 	signin = () => {
 		let username = document.getElementById('username').value;
 		let password = document.getElementById('password').value;
@@ -49,7 +50,6 @@ class LoginPage extends Component {
 				headers: {
 					"Content-Type": "application/json"
 				},
-				credentials: "same-origin"
 			});
 			signIn.then(response => {
 				if (response.status === 200) {
@@ -66,7 +66,6 @@ class LoginPage extends Component {
 				}
 			});
 		}
-		
 	};
 
 	returnHome = () => {

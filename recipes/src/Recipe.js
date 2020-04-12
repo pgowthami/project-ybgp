@@ -60,8 +60,8 @@ class Recipe extends Component {
 			}
 			this.setState({ ingredients: data });
 		});
-
 	};
+
 
 	getInstructions = () => {
 		const fetchInstructions = fetch('/api/instructions/' + this.recipeId + '/', {
@@ -98,6 +98,7 @@ class Recipe extends Component {
 		}
 	}
 
+
 	favouriteRecipe = () => {
 		const favRecipe = fetch('/api/favourite/' + this.state.username + '/' + this.recipeId + '/', {
 			method: "POST",
@@ -121,6 +122,7 @@ class Recipe extends Component {
 		});
 	};
 
+
 	removeFavourite = () => {
 		const removeFav = fetch('/api/remove/favourite/' + this.state.username + '/' + this.recipeId + '/', {
 			method: "POST",
@@ -134,17 +136,21 @@ class Recipe extends Component {
 				this.forceUpdate();
 			} else if (response.status === 400) {
 				window.alert('Bad input. Please enter a valid username and recipe id');
-			}else {
+			} else {
 				window.alert('An error occured');
 			}
 		});
-	}
+	};
 
 
 	addComment = () => {
 		let comment = document.getElementById('user-comment').value;
-		console.log(comment);
-		if (comment !== '') {
+		document.getElementById('user-comment').innerHTML = '';
+		if (comment && comment.length !== 0) {
+			if (comment.length > 55) {
+				window.alert('Comment is too long. Please enter a comment with less than 55 characters.');
+				return;
+			}
 			const addComment = fetch('/api/comments/', {
 				method: "POST",
 				headers: {
@@ -167,11 +173,10 @@ class Recipe extends Component {
 					return;
 				}
 				let newComment = (data.ops)[0];
-				console.log(newComment);
 				this.getComments();
 			});
 		}
-	}
+	};
 
 
 	deleteComment = (id) => {
@@ -183,7 +188,6 @@ class Recipe extends Component {
 		});
 		deleteComment.then(response => {
 			if (response.status === 200) {
-				console.log('DELETE COMMENT');
 				this.getComments();
 				this.forceUpdate();
 			} else if (response.status === 400) {
@@ -199,9 +203,7 @@ class Recipe extends Component {
 	};
 
 
-	// check if recipe has been favourited and display button appropriately
 	getFavourite = () => {
-		console.log('HEREEEEEEEEEEEE');
 		const fetchFavourite = fetch('/api/favourite/' + this.recipeId + '/', {
 			method: "GET",
 			headers: {
@@ -249,9 +251,7 @@ class Recipe extends Component {
 			if (data === '[]') {
 				return;
 			}
-			console.log(data);
 			this.state.commentsList = data;
-			console.log(this.state.commentsList);
 			this.forceUpdate();
 		});
 	}
@@ -267,12 +267,8 @@ class Recipe extends Component {
 		avgRateOfRecipe.then(response => {
 			return response.json();
 		}).then(value => {
-			console.log("TeSTTT");
-			console.log(value);
 			if (value > 0) {
-				console.log(value);
 				this.state.averagerating = value;
-				console.log(this.state.averagerating);
 				this.forceUpdate();
 			}
 			return;
@@ -281,8 +277,6 @@ class Recipe extends Component {
 
 
 	getRatings = () => {
-		console.log("USERNAME");
-		console.log(this.state.username);
 		const ratingOfRecipe = fetch('/api/rating/' + this.state.username + '/' + this.recipeId + '/', {
 			method: "GET",
 			headers: {
@@ -292,11 +286,8 @@ class Recipe extends Component {
 		ratingOfRecipe.then(response => {
 			return response.json();
 		}).then(value => {
-			console.log("TeSTTT");
-			console.log(value);
 			if (value > 0) {
 				this.setState({ ratings: { value } });
-				console.log(this.state.ratings.value);
 				this.forceUpdate();
 			}
 			return;
@@ -322,7 +313,6 @@ class Recipe extends Component {
 			this.getAverageRating();
 			this.forceUpdate();
 		});
-
 	};
 
 
