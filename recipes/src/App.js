@@ -112,7 +112,7 @@ class App extends Component {
 
 	signOut = () => {
 		const signoutPromise = fetch('/signout/', {
-			method: "POST",
+			method: "GET",
 			headers: {
 				"Content-Type": "application/json"
 			},

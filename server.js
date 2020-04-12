@@ -68,6 +68,7 @@ var checkIngredients = function(req, res, next) {
 
 let apiKey = '3bd6b3501a044f70b65971f869776dfb';
 
+
 app.post('/signup/', checkUsername, function (req, res, next) {
 	if (!('username' in req.body)) return res.status(401).end('username is missing in request body');
     if (!('password' in req.body)) return res.status(401).end('password is missing in request body');
@@ -97,6 +98,7 @@ app.post('/signup/', checkUsername, function (req, res, next) {
 		});
 	});
 });
+
 
 app.post('/signin/', checkUsername, function (req, res, next) {
 	if (!('username' in req.body)) return res.status(400).end('username is missing in request body');
@@ -128,6 +130,7 @@ app.post('/signin/', checkUsername, function (req, res, next) {
 	});
 });
 
+
 // Change password
 app.post('/changePassword/', isAuthenticated, function (req, res, next) {
 	if (!('password1' in req.body)) return res.status(401).end('password entry #1 is missing');
@@ -135,6 +138,8 @@ app.post('/changePassword/', isAuthenticated, function (req, res, next) {
     let username = req.username;
     let password1 = req.body.password1;
     let password2 = req.body.password2;
+    if(password1.length === 0 || password2.length === 0) return res.status(400).end('passwords cannot be empty string');
+
 	// Check if passwords match
 	if(password1 !== password2){
 		return res.status(404).end('Passwords do not match. Please try again.');
@@ -158,8 +163,8 @@ app.post('/changePassword/', isAuthenticated, function (req, res, next) {
 	});
 });
 
-// curl -b cookie.txt -c cookie.txt localhost:3000/signout/
-app.post('/signout/', function (req, res, next) {
+
+app.get('/signout/', function (req, res, next) {
     res.setHeader('Set-Cookie', cookie.serialize('username', '', {
          path : '/', 
          maxAge: 60 * 60 * 24 * 7 // 1 week in number of seconds
@@ -171,23 +176,19 @@ app.post('/signout/', function (req, res, next) {
 
 app.post('/api/recipes/', checkIngredients, function (req, res, next) {
  	Request.get("https://api.spoonacular.com/recipes/search?apiKey="+apiKey+"&query=" + req.body.ingredients+'&number=21', (error, response, body) => {
-	    if(error) {
-	        return console.dir(error);
-	    }
-	    console.log(body);
+	    if (error) return res.status(500).end("internal server error");
 		return res.json(body);
 	 });
 });
 
+
 app.get('/api/instructions/:id/', checkId, function (req, res, next) {	
  	Request.get("https://api.spoonacular.com/recipes/" + req.params.id + "/analyzedInstructions?apiKey="+apiKey, (error, response, body) => {
-		if(error) {
-			return console.dir(error);
-		}
-		return res.json(body);
-		 
+		if (error) return res.status(500).end("internal server error");
+		return res.json(body); 
 	 });
 });
+
 
 app.get('/api/ingredients/:id/', checkId, function (req, res, next) {
 	Request.get("https://api.spoonacular.com/recipes/" + req.params.id + "/information?apiKey="+apiKey, (error, response, body) => {
@@ -215,6 +216,7 @@ app.post('/api/favourite/:username/:id/', isAuthenticated, checkId, function (re
 		});
 	});
 });
+
 
 // remove favourite
 app.post('/api/remove/favourite/:username/:id/', isAuthenticated, checkId, function (req, res, next) {
