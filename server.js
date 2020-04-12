@@ -275,6 +275,7 @@ app.post('/api/comments/', isAuthenticated, sanitizeContent, function (req, res,
 		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("comments").insertOne({username: req.username, recipeId: recipeId, content: content, date: new Date()}, function(err, result) {
 			if (err) return res.status(500).end("internal server error");
+			console.log(result);
 			return res.json(JSON.parse(result));
 			db.close();
 		});
@@ -313,6 +314,7 @@ app.get('/api/comments/:id/', checkId, function(req, res, next){
 		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("comments").find({recipeId: req.params.id},  {sort: {date: -1}, limit: 10}).toArray(function(err, result){
 			if (err) return res.status(500).end("internal server error");
+			console.log(result);
 			return res.json(result);
 			db.close();
 		});

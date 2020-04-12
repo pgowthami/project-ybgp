@@ -23,11 +23,6 @@
     color: white;
 }
 
-.homepage-header{
-    display: flex;
-    flex-direction: row;
-}
-
 .account-button {
     background:white;
     width:120px;

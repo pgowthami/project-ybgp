@@ -9,7 +9,7 @@ const HomePage = props => {
 		<div className='homepage-display'>
 			<div id='user-favourites'>
 				<div className='homepage-headings'>Your Recent Favourites!</div>
-				<div id='favourite-message'></div>
+				<div id='favourite-message'>{props.favouriteMessage}</div>
 				{props.userFavourites.map((recipe) => {
 					return <RecipeBox key={recipe.recipeId}
 						id={recipe.recipeId}

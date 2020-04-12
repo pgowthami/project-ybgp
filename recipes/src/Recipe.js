@@ -22,27 +22,20 @@ class Recipe extends Component {
 	};
 
 	componentDidMount = () => {
-		console.log(document.getElementById('btn-favourite'));
 		this.recipeId = this.props.location.state.recipeId;
 		
-		//this.setState({loggedIn: this.props.location.state.loggedIn});
-		//this.setState({ username: this.props.location.state.username});
 		this.state.loggedIn = this.props.location.state.loggedIn;
 		this.state.username = this.props.location.state.username;
 		this.getIngredients();
 		this.getInstructions();
 		this.getComments();
 		if (this.props.location.state.loggedIn) {
-			console.log('HERE');
 			this.getFavourite();
 			this.getRatings();
 		}
 		this.getAverageRating();
 	};
 
-	compoundDidUpdate = () => {
-		console.log('here');
-	}
 
 	getIngredients = () => {
 		const fetchIngredients = fetch('/api/ingredients/' + this.recipeId + '/', {
@@ -50,7 +43,6 @@ class Recipe extends Component {
 			headers: {
 				"Content-Type": "application/json"
 			},
-			//credentials: "same-origin"
 		});
 		fetchIngredients.then(response => {
 			if (response.status === 400) {
@@ -77,7 +69,6 @@ class Recipe extends Component {
 			headers: {
 				"Content-Type": "application/json"
 			},
-			//credentials: "same-origin"
 		});
 		fetchInstructions.then(response => {
 			if (response.status === 400) {
@@ -100,12 +91,9 @@ class Recipe extends Component {
 
 
 	handleFavourite = () => {
-		// if recipe has been favourited, call remove function
 		if (this.state.favouriteValue === 'Favourited!') {
-			console.log('in here');
 			this.removeFavourite();
 		} else {
-			// add to favourites
 			this.favouriteRecipe();
 		}
 	}
@@ -123,7 +111,6 @@ class Recipe extends Component {
 		});
 		favRecipe.then(response => {
 			if (response.status === 200) {
-				//document.getElementById('btn-favourite').innerHTML = 'Favourited!';
 				this.state.favouriteValue = 'Favourited!';
 				this.forceUpdate();
 			} else if (response.status === 400) {
@@ -180,13 +167,8 @@ class Recipe extends Component {
 					return;
 				}
 				let newComment = (data.ops)[0];
-				//this.setState({ commentsList: [...this.state.commentsList, newComment] });
-				//console.log(this.state.commentsList);
-				//this.state.commentsList.unshift(newComment);
-				//this.state.commentsList.splice(0, 0, newComment);
-				//console.log(this.state.commentsList);
+				console.log(newComment);
 				this.getComments();
-				//this.forceUpdate();
 			});
 		}
 	}
@@ -236,13 +218,10 @@ class Recipe extends Component {
 			if (data === null) {
 				return;
 			}
-			//let buttonfvt = document.getElementById('btn-favourite');
 			if (data) {
 				this.state.favouriteValue = 'Favourited!';
-				//this.myRef.current.value = 'Favourited!';
 			} else {
 				this.state.favouriteValue = 'Favourite';
-				//this.myRef.value = 'Favourite';
 			}
 			this.forceUpdate();
 			return;
@@ -270,7 +249,6 @@ class Recipe extends Component {
 			if (data === '[]') {
 				return;
 			}
-			//this.setState({ commentsList: data });
 			console.log(data);
 			this.state.commentsList = data;
 			console.log(this.state.commentsList);
@@ -296,7 +274,6 @@ class Recipe extends Component {
 				this.state.averagerating = value;
 				console.log(this.state.averagerating);
 				this.forceUpdate();
-				//document.getElementById('starrating').value = value;
 			}
 			return;
 		});
@@ -319,10 +296,8 @@ class Recipe extends Component {
 			console.log(value);
 			if (value > 0) {
 				this.setState({ ratings: { value } });
-				//this.state.ratings = value;
 				console.log(this.state.ratings.value);
 				this.forceUpdate();
-				//document.getElementById('starrating').value = value;
 			}
 			return;
 		});
@@ -344,21 +319,11 @@ class Recipe extends Component {
 			return response.json();
 		}).then(data => {
 			this.setState({ ratings: { value } });
-			//this.state.ratings = value;
 			this.getAverageRating();
 			this.forceUpdate();
 		});
 
 	};
-
-
-	/*
-	signOut = () => {
-		this.setState({ username: '' });
-		this.setState({ loggedIn: false });
-		this.setState({ showLoginPage: true });
-	}
-	*/
 
 
 	render() {
