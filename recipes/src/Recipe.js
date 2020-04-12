@@ -87,6 +87,7 @@ class Recipe extends Component {
 			//let allSteps = (JSON.parse(data)[0])['steps'];
 			let info = JSON.parse(data);
 			let allSteps = [];
+			let i;
 			for (i = 0; i < info.length; i++) {
 				allSteps.push((info[i])['steps']);
 			}
