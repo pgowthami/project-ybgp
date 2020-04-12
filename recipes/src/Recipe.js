@@ -145,7 +145,6 @@ class Recipe extends Component {
 
 	addComment = () => {
 		let comment = document.getElementById('user-comment').value;
-		document.getElementById('user-comment').innerHTML = '';
 		if (comment && comment.length !== 0) {
 			if (comment.length > 55) {
 				window.alert('Comment is too long. Please enter a comment with less than 55 characters.');

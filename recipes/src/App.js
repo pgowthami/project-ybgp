@@ -248,7 +248,7 @@ class App extends Component {
 				</div>
 
 				{!this.state.showUserHomepage && !this.state.showLoginPage && this.state.recipes && this.state.recipes.length > 0 &&
-					<h2>'>Your Search Results:</h2>} 
+					<h2>Your Search Results:</h2>} 
 
 				{!this.state.showUserHomepage && !this.state.showLoginPage &&
 					<div className="allRecipesContainer">
