@@ -1,6 +1,7 @@
 ﻿.homepage-display{
     display: flex;
     flex-direction:row;
+    margin-top: 50px;
 }
 
 #user-favourites {
@@ -17,4 +18,5 @@
 
 .homepage-headings{
     font-size:30px;
+    margin-top: 20px;
 }

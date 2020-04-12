@@ -23,6 +23,11 @@
     color: white;
 }
 
+.homepage-header{
+    display: flex;
+    flex-direction: row;
+}
+
 .account-button {
     background:white;
     width:120px;
@@ -74,7 +79,7 @@
     flex-direction: column;
     border-style: double;
     width: 400px;
-    background-color: #E0E7E9;
+    background-color: #F0F0F0;
 }
 
 #user-favourites {
@@ -82,7 +87,8 @@
     flex-direction: column;
     border-style: double;
     width: 400px;
-    background-color: #E0E7E9;
+    background-color: #F0F0F0;
+  
 }
 
 

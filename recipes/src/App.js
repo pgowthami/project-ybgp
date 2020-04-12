@@ -146,12 +146,6 @@ class App extends Component {
 				this.state.userFavourites = [];
 				this.state.userSuggestions = [];
 
-				// clear props
-				console.log(this.props.location.state);
-				//this.props.location.state.username = '';
-				//this.props.location.state.loggedIn = 'false';
-				//this.props.location.showUserHomepage = 'false';
-				//console.log(this.props.location.state);
 				// clear local storage
 				localStorage.clear();
 				this.forceUpdate();
@@ -263,16 +257,20 @@ class App extends Component {
 
 				{this.state.changePassword && <UserAccount username={this.state.username} updateUser={this.updateUser} history={this.props.history} />}
 
-				{this.state.loggedIn && !this.state.showUserHomepage && !this.state.changePassword &&
-					<button id='btn-home' className='btn' onClick={this.displayHomepage}>Homepage</button>
-				}
+				
 
 				<div className="second-header">
 					{this.state.showLoginPage && <LoginPage updateUser={this.updateUser} history={this.props.history} />}
-					{!this.state.showLoginPage && !this.state.changePassword && <SearchForm recipes={this.getAllRecipes} />}
+					<div className='homepage-header'>
+						{this.state.loggedIn && !this.state.showUserHomepage && !this.state.changePassword &&
+							<button id='btn-home' className='btn' onClick={this.displayHomepage}>Homepage</button>
+						}
+						{!this.state.showLoginPage && !this.state.changePassword && <SearchForm recipes={this.getAllRecipes} />}
+					</div>
 				</div>
 
 				{!this.state.showUserHomepage && !this.state.showLoginPage && <div className="allRecipesContainer">
+					<h1>Your Search Results:</h1>
 					{this.state.recipes.map((recipe) => {
 						return <RecipeBox key={recipe.id}
 							id={recipe.id}

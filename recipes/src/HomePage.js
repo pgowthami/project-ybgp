@@ -4,6 +4,8 @@ import './HomePage.css';
 
 const HomePage = props => {
 	return (
+		<div>
+			<h1>Welcome to Your Homepage, {props.username}</h1>
 		<div className='homepage-display'>
 			<div id='user-favourites'>
 				<div className='homepage-headings'>Your Recent Favourites!</div>
@@ -35,6 +37,7 @@ const HomePage = props => {
 						history={JSON.stringify(props.history)}
 						showBackButton={false} />
 				})}
+			</div>
 			</div>
 		</div>
 	);
