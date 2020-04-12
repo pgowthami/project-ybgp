@@ -322,10 +322,13 @@ app.get('/api/comments/:id/', checkId, function(req, res, next){
 						return res.json(result);
 					});
 			}
-
-
+			else{
+				
 			return res.json(result);
 			db.close();
+			}
+
+
 		});
 	});
 });
