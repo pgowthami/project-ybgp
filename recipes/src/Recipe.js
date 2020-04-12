@@ -84,7 +84,12 @@ class Recipe extends Component {
 				this.setState({ instructions: [{ step: "Sorry, no data found" }] });
 				return;
 			}
-			let allSteps = (JSON.parse(data)[0])['steps'];
+			//let allSteps = (JSON.parse(data)[0])['steps'];
+			let info = JSON.parse(data);
+			let allSteps = [];
+			for (i = 0; i < info.length; i++) {
+				allSteps.push((info[i])['steps']);
+			}
 			this.setState({ instructions: allSteps });
 		});
 	};
