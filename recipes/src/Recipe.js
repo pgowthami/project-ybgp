@@ -125,7 +125,7 @@ class Recipe extends Component {
 
 	removeFavourite = () => {
 		const removeFav = fetch('/api/remove/favourite/' + this.state.username + '/' + this.recipeId + '/', {
-			method: "POST",
+			method: "DELETE",
 			headers: {
 				"Content-Type": "application/json"
 			},
