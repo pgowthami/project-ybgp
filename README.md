@@ -10,7 +10,7 @@
 
 **Video URL:** https://www.youtube.com/watch?v=xUfN4I6BbJQ
 
-**Documentation URL:** 
+**Documentation URL:** Added REST API documentation in the [documentation](./documentation) directory.
 
 **Description of the web application:**
 We built a recipe book web application that allows users to search for recipes using a key ingredient. Users can search for recipes without an account, or sign up to create an account. With an account, users are able to have a personalized homepage and the ability to rate, comment and favourite recipes. The homepage will contain the 5 latest recipes that were favourited by the user along with the top-rated recipes (based on user ratings) from our database.
