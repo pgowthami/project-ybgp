@@ -66,7 +66,7 @@ var checkIngredients = function(req, res, next) {
     next();
 };
 
-let apiKey = 'd1696963181344d4b436f3e858670096';
+let apiKey = 'ae6996357b014141994812bbe9f8d916';
 
 
 app.post('/signup/', checkUsername, function (req, res, next) {
@@ -267,7 +267,6 @@ app.post('/api/comments/', isAuthenticated, sanitizeContent, function (req, res,
 		let dbo = db.db("heroku_xd79spf1");
 		dbo.collection("comments").insertOne({username: req.username, recipeId: recipeId, content: content, date: new Date()}, function(err, result) {
 			if (err) return res.status(500).end("internal server error");
-			console.log(result);
 			return res.json(JSON.parse(result));
 			db.close();
 		});
