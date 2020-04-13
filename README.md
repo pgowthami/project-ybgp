@@ -6,38 +6,33 @@
 *	Gowthami Palle
 *	Yaaliny Balachandran
 
+**Website URL:** https://afternoon-forest-07471.herokuapp.com/
+
+**Video URL:** https://www.youtube.com/watch?v=xUfN4I6BbJQ
+
+**Documentation URL:** 
+
 **Description of the web application:**
-We aspire to build a recipe book web application where users can search for recipes using key ingredients. The application will have the following functionalities:
-*	Users can use the app with or without having an account. However, more features (that are listed below) will be available to the users who have an account.
-*	Users without an account can search for recipes based on key ingredients and view the comments and ratings on the recipes.
-*	Users can create an account to get more personalized features.
-*	Users with an account can favourite recipes for easy access in the future, as well as upload new recipes which can be viewed by all other users.
-*	Users with an account can rate each recipe and add comments to it.
-*	Users with an account have a profile page with a profile picture where they can edit their personal information such as change password or change their profile picture
-*	Each user will have a personalized home page which will contain a list of suggested recipes based on their favourites. The homepage will also contain the list of recipes that were favourited by the user for easy access.
+We built a recipe book web application that allows users to search for recipes using a key ingredient. Users can search for recipes without an account, or sign up to create an account. With an account, users are able to have a personalized homepage and the ability to rate, comment and favourite recipes. The homepage will contain the 5 latest recipes that were favourited by the user along with the top-rated recipes (based on user ratings) from our database.
+**Features of our website:**
+* Users can either make an account or use our website without an account, where users with an account have more features
+**Users Without An Account Features:**
+* Users can search for recipes using a main ingredient
+* Users can click on recipes and view their details, and they can see comments made by users with accounts
+**Users With An Account Features:**
+* Users can also search for recipes using a main ingredient
+* Users can view recipe details and can favourite, rate and comment on these recipes
+  * Users can favourite a recipe and it will be saved to the recent favourites list on their homepage for future use
+  * Users can rate a recipe out of 5 stars and contribute to the average rating of a recipe. The average rating is calculated by taking the average of the ratings given by all users on the recipe.
+  * Users can comment on recipes and remove their own comments, but not others
+* Users have their homepage that has a search bar to search for more recipes, and two lists: Your Recent Favourites! and Try these top-rated recipes!
+  * The ‘Your Recent Favourites!’ list contains the last 5 recipes the user has favourited
+  * The ‘Try these top-rated recipes!’ contains the top 5 recipes with the highest average ratings
+* User can also change their password
 
-**Key features that will be completed by the Beta version:**
-*	prototypes of all frontend pages for team members’ reference
-*	frontend UI components are built based on the prototypes
-*	users with or without an account can search for and view recipes based on key ingredients and view the rating and comments on each recipe
-*	users can create an account
-*	users with an account can rate, favourite, and comment on any recipe in the database
-
-**Additional features that will be completed in the Final version:**
-*	users with an account have a profile page where they can view and/or update their information
-*	users with an account can upload/delete their own recipes to/from the database
-*	each user with an account will have a personalized homepage. The homepage will contain a list of suggested recipes based on the recipes they have favourited, and a (paginated) list of all the recipes they have favourited recipes.
-
-
-**Technologies that will be used:**
+**Technologies that were be used:**
 *	React - framework for frontend
-*	NodeJS and Express- server-side languages
+*	NodeJS and Express - server-side languages
 *	MongoDB - NoSQL database
 
-**Description of 5 technical challenges:**
-Both the group members had no experience with web development prior to taking CSCC09. So, building this application from scratch is quite challenging. More precisely, we will be tackling the following technical challenging:
-*	Learning how to use React for the first time to make a UI that is appealing to the users
-*	Learning how to use MongoDB for the first time to store user and recipe information in a database
-*	Integrating a third-party recipe API along with our own database of recipes that are uploaded by users so that users can view both the recipes from the API as well as the recipes that were uploaded using our web application
-*	Since we’re using a third-party API for the first time, it will be challenging to change and store the ratings and comments on recipes that are fetched from the API. This is challenging because we are only getting the recipes from the API. So, we will have to store the ratings and comments in our own database and link it with the recipes from the API every time they are fetched.
-*	Deriving an accurate list of suggested recipes for users based on the recipes they had favourited
+**Notes:** We are using a third party API called Spoonacular to retrieve recipes. We only have 150 API calls per day, so if you are unable to search for recipes anymore, please contact us, so we can change the API key.
